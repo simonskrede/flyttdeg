@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flyttdeg/takepicture.dart';
+import 'package:flyttdeg/thanks.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class DescriptionScreen extends StatefulWidget {
@@ -99,7 +100,7 @@ class DescriptionScreenState extends State<DescriptionScreen> {
 
     try {
       await dio.post(
-          "http://192.168.1.200:8099/flyttdeg", data: formData);
+          "https://flyttdeg.no/flyttdeg", data: formData);
     } on DioError catch (e){
       await _showMyDialog('Noe gikk galt, flytting er tilsynelatende vanskelig i dag :-|');
 
@@ -112,12 +113,10 @@ class DescriptionScreenState extends State<DescriptionScreen> {
       return;
     }
 
-    await _showMyDialog('Melding om uhensiktsmessig plassering er sendt. Nå er flytting opp til Bymiljøetaten :-|');
-
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => TakePictureScreen(),
+        builder: (context) => ThanksScreen(),
       ),
     );
   }
