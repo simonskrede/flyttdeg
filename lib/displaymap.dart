@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
@@ -30,14 +31,40 @@ class DisplayMapScreenState extends State<DisplayMapScreen> {
   void initState() {
     super.initState();
     _initialPosition = null;
+    print("established geolocator");
+
     _getUserLocation();
   }
 
   void _getUserLocation() async {
+    /*print("checking permission");
+
+    await Geolocator().checkGeolocationPermissionStatus(locationPermission: GeolocationPermission.locationWhenInUse);
+
+    print("getting location");
+
     Position position = await Geolocator()
-        .getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+        .getCurrentPosition(desiredAccuracy: LocationAccuracy.best, locationPermissionLevel: GeolocationPermission.locationWhenInUse);*/
+
+    var channel = MethodChannel('flutter.baseflow.com/geolocator/methods');
+    Map<String, dynamic> params = <String, dynamic>{
+      'accuracy': LocationAccuracy.high.value,
+      'distanceFilter': 0,
+      'forceAndroidLocationManager': false, // <- choose what's best for you
+      'timeInterval': 0,
+    };
+    Map<dynamic, dynamic> positionMap = await channel.invokeMethod(
+      'getCurrentPosition',
+      params,
+    );
+
+// Get the properties you need here. You may want to check if they exist first.
+    double latitude = positionMap['latitude'];
+    double longitude = positionMap['longitude'];
+
+    print("done getting location");
     setState(() {
-      _initialPosition = LatLng(position.latitude, position.longitude);
+      _initialPosition = LatLng(latitude, longitude);
     });
   }
 

@@ -44,7 +44,7 @@ class TakePictureScreenState extends State<TakePictureScreen> {
       // initialize cameras.
       cameras = await availableCameras();
       // initialize camera controllers.
-      controller = new CameraController(cameras[0], ResolutionPreset.medium);
+      controller = new CameraController(cameras[0], ResolutionPreset.medium, enableAudio: false);
       await controller.initialize();
     } on CameraException catch (_) {
       print(_);
