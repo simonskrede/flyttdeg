@@ -30,6 +30,7 @@ class TakePictureScreenState extends State<TakePictureScreen> {
 
   @override
   void didUpdateWidget(TakePictureScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
     controller.initialize();
   }
 
