@@ -17,27 +17,30 @@ class DescriptionScreen extends StatefulWidget {
 }
 
 TextField textField = new TextField(
+  autofocus: true,
+  maxLines: 40,
   style: const TextStyle(
     color: Colors.black,
+    fontSize: 20.0
   ),
   onChanged: changedText,
   decoration: new InputDecoration(
-    icon: new Icon(
+    /*icon: new Icon(
       Icons.insert_emoticon,
       color: Colors.black,
-    ),
+    ),*/
     border: InputBorder.none,
     hintText: "Beskriv hvorfor denne bør flytte seg ...",
-    hintStyle: const TextStyle(color: Colors.black, fontSize: 12.0),
+    hintStyle: const TextStyle(color: Color(0xFF666666), fontSize: 20.0),
     contentPadding: const EdgeInsets.only(
-        top: 20.0, right: 5.0, bottom: 20.0, left: 30.0),
+        top: 40.0, right: 40.0, bottom: 40.0, left: 40.0),
   ),
 );
 
 Widget bodySection = new Expanded(
   child: new Container(
     padding: new EdgeInsets.all(8.0),
-    color: Colors.white70,
+    color: Color(0xFFeeeeee),
     child: textField,
   ),
 );
