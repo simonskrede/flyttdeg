@@ -45,6 +45,11 @@ class TakePictureScreenState extends State<TakePictureScreen> {
       // initialize cameras.
       cameras = await availableCameras();
       // initialize camera controllers.
+	if(cameras.isEmpty){
+		print("Empty cameras");
+		return;
+	}
+
       controller = new CameraController(cameras[0], ResolutionPreset.medium, enableAudio: false);
       await controller.initialize();
     } on CameraException catch (_) {
@@ -65,7 +70,7 @@ class TakePictureScreenState extends State<TakePictureScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (!_isReady) return new Container();
+    //if (!_isReady) return new Container();
     return Scaffold(
       // Wait until the controller is initialized before displaying the
       // camera preview. Use a FutureBuilder to display a loading spinner
@@ -92,12 +97,15 @@ class TakePictureScreenState extends State<TakePictureScreen> {
     // Take the PathPicture in a try / catch block. If anything goes wrong,
     // catch the error.
     try {
+
+String path = "";
+	if(cameras.isNotEmpty){
       // Ensure that the camera is initialized.
       await _initializeControllerFuture;
 
       // Construct the path where the image should be saved using the
       // pattern package.
-      final path = join(
+      path = join(
         // Store the picture in the temp directory.
         // Find the temp directory using the `path_provider` plugin.
         (await getTemporaryDirectory()).path,
@@ -106,6 +114,9 @@ class TakePictureScreenState extends State<TakePictureScreen> {
 
       // Attempt to take a picture and log where it's been saved.
       await controller.takePicture(path);
+} else {
+	path = "";
+}
 
       // If the picture was taken, display it on a new screen.
       Navigator.push(

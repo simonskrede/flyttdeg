@@ -14,7 +14,7 @@ Future<void> main() async {
 
   Map<Permission, PermissionStatus> statuses = await [
     Permission.camera,
-    Permission.locationWhenInUse,
+//    Permission.locationWhenInUse,
   ].request();
 
   runApp(
