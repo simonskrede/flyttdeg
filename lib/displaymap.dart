@@ -71,42 +71,42 @@ class DisplayMapScreenState extends State<DisplayMapScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: _initialPosition == null
-            ? Container(
-                child: Center(
-                  child: Text(
-                    'loading map..',
-                    style: TextStyle(
-                        fontFamily: 'Avenir-Medium', color: Colors.grey[400]),
-                  ),
+      body: _initialPosition == null
+          ? Container(
+              child: Center(
+                child: Text(
+                  'loading map..',
+                  style: TextStyle(
+                      fontFamily: 'Avenir-Medium', color: Colors.grey[400]),
                 ),
-              )
-            : Container(
-                child: Stack(children: <Widget>[
-                  GoogleMap(
-                    mapType: MapType.normal,
-                    initialCameraPosition: CameraPosition(
-                      target: _initialPosition,
-                      zoom: 14.4746,
-                    ),
-                    onMapCreated: (GoogleMapController _controller) {
-                      setState(() {
-                        controller.complete(_controller);
-                      });
-                    },
-                    zoomGesturesEnabled: true,
-                    onCameraMove: (CameraPosition position) {
-                      _lastMapPosition = position.target;
-                    },
-                    myLocationEnabled: true,
-                    compassEnabled: true,
-                    myLocationButtonEnabled: false,
-                  ),
-                ]),
               ),
-        persistentFooterButtons: [
+            )
+          : Container(
+              child: Stack(children: <Widget>[
+                GoogleMap(
+                  mapType: MapType.normal,
+                  initialCameraPosition: CameraPosition(
+                    target: _initialPosition,
+                    zoom: 14.4746,
+                  ),
+                  onMapCreated: (GoogleMapController _controller) {
+                    setState(() {
+                      controller.complete(_controller);
+                    });
+                  },
+                  zoomGesturesEnabled: true,
+                  onCameraMove: (CameraPosition position) {
+                    _lastMapPosition = position.target;
+                  },
+                  myLocationEnabled: true,
+                  compassEnabled: true,
+                  myLocationButtonEnabled: false,
+                ),
+              ]),
+            ),
+      persistentFooterButtons: [
         FlatButton(child: Text("Flytt deg!!"), onPressed: _savePosition)
-    ],
+      ],
     );
   }
 
@@ -115,8 +115,7 @@ class DisplayMapScreenState extends State<DisplayMapScreen> {
       context,
       MaterialPageRoute(
         builder: (context) => DescriptionScreen(
-          position: _lastMapPosition,
-          imagePath: widget.imagePath),
+            position: _lastMapPosition, imagePath: widget.imagePath),
       ),
     );
   }

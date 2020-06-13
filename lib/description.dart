@@ -19,10 +19,7 @@ class DescriptionScreen extends StatefulWidget {
 TextField textField = new TextField(
   autofocus: true,
   maxLines: 40,
-  style: const TextStyle(
-    color: Colors.black,
-    fontSize: 20.0
-  ),
+  style: const TextStyle(color: Colors.black, fontSize: 20.0),
   onChanged: changedText,
   decoration: new InputDecoration(
     /*icon: new Icon(
@@ -32,8 +29,8 @@ TextField textField = new TextField(
     border: InputBorder.none,
     hintText: "Beskriv hvorfor denne bør flytte seg ...",
     hintStyle: const TextStyle(color: Color(0xFF666666), fontSize: 20.0),
-    contentPadding: const EdgeInsets.only(
-        top: 40.0, right: 40.0, bottom: 40.0, left: 40.0),
+    contentPadding:
+        const EdgeInsets.only(top: 40.0, right: 40.0, bottom: 40.0, left: 40.0),
   ),
 );
 
@@ -75,9 +72,7 @@ class DescriptionScreenState extends State<DescriptionScreen> {
           title: Text('Flytter den seg?'),
           content: SingleChildScrollView(
             child: ListBody(
-              children: <Widget>[
-                Text(message)
-              ],
+              children: <Widget>[Text(message)],
             ),
           ),
           actions: <Widget>[
@@ -95,17 +90,20 @@ class DescriptionScreenState extends State<DescriptionScreen> {
 
   void _transmitInfo() async {
     var formData = FormData.fromMap({
-      "position": widget.position.latitude.toString()+","+widget.position.longitude.toString(),
+      "position": widget.position.latitude.toString() +
+          "," +
+          widget.position.longitude.toString(),
       "description": lastTextValue,
-      "file": await MultipartFile.fromFile(widget.imagePath, filename: "flyttdeg.png"),
+      "file": await MultipartFile.fromFile(widget.imagePath,
+          filename: "flyttdeg.png"),
     });
     Dio dio = new Dio();
 
     try {
-      await dio.post(
-          "https://flyttdeg.no/flyttdeg", data: formData);
-    } on DioError catch (e){
-      await _showMyDialog('Noe gikk galt, flytting er tilsynelatende vanskelig i dag :-|');
+      await dio.post("https://flyttdeg.no/flyttdeg", data: formData);
+    } on DioError catch (e) {
+      await _showMyDialog(
+          'Noe gikk galt, flytting er tilsynelatende vanskelig i dag :-|');
 
       Navigator.push(
         context,

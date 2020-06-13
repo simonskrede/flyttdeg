@@ -9,14 +9,12 @@ import 'displaymap.dart';
 
 // A screen that allows users to take a picture using a given camera.
 class TakePictureScreen extends StatefulWidget {
-
   const TakePictureScreen({
     Key key,
   }) : super(key: key);
 
   @override
   TakePictureScreenState createState() => TakePictureScreenState();
-
 }
 
 class TakePictureScreenState extends State<TakePictureScreen> {
@@ -45,12 +43,13 @@ class TakePictureScreenState extends State<TakePictureScreen> {
       // initialize cameras.
       cameras = await availableCameras();
       // initialize camera controllers.
-	if(cameras.isEmpty){
-		print("Empty cameras");
-		return;
-	}
+      if (cameras.isEmpty) {
+        print("Empty cameras");
+        return;
+      }
 
-      controller = new CameraController(cameras[0], ResolutionPreset.medium, enableAudio: false);
+      controller = new CameraController(cameras[0], ResolutionPreset.medium,
+          enableAudio: false);
       await controller.initialize();
     } on CameraException catch (_) {
       print(_);
@@ -78,7 +77,7 @@ class TakePictureScreenState extends State<TakePictureScreen> {
       body: FutureBuilder<void>(
         future: _initializeControllerFuture,
         builder: (context, snapshot) {
-          print("test: " +  controller.value.isInitialized.toString());
+          print("test: " + controller.value.isInitialized.toString());
 
           if (controller == null || !controller.value.isInitialized) {
             return Center(child: CircularProgressIndicator());
@@ -97,26 +96,25 @@ class TakePictureScreenState extends State<TakePictureScreen> {
     // Take the PathPicture in a try / catch block. If anything goes wrong,
     // catch the error.
     try {
+      String path = "";
+      if (cameras.isNotEmpty) {
+        // Ensure that the camera is initialized.
+        await _initializeControllerFuture;
 
-String path = "";
-	if(cameras.isNotEmpty){
-      // Ensure that the camera is initialized.
-      await _initializeControllerFuture;
+        // Construct the path where the image should be saved using the
+        // pattern package.
+        path = join(
+          // Store the picture in the temp directory.
+          // Find the temp directory using the `path_provider` plugin.
+          (await getTemporaryDirectory()).path,
+          '${DateTime.now()}.png',
+        );
 
-      // Construct the path where the image should be saved using the
-      // pattern package.
-      path = join(
-        // Store the picture in the temp directory.
-        // Find the temp directory using the `path_provider` plugin.
-        (await getTemporaryDirectory()).path,
-        '${DateTime.now()}.png',
-      );
-
-      // Attempt to take a picture and log where it's been saved.
-      await controller.takePicture(path);
-} else {
-	path = "";
-}
+        // Attempt to take a picture and log where it's been saved.
+        await controller.takePicture(path);
+      } else {
+        path = "";
+      }
 
       // If the picture was taken, display it on a new screen.
       Navigator.push(

@@ -21,8 +21,7 @@ class ThanksScreenState extends State<ThanksScreen> {
           child: Text(
               'Takk, nå er det Bymiljøetaten som forhåpentligvis sørger for flytting!',
               textAlign: TextAlign.center,
-          textScaleFactor: 2)
-      ),
+              textScaleFactor: 2)),
       persistentFooterButtons: [
         FlatButton(
             child: Text("Flere som skal flytte seg?"), onPressed: _flyttMer)
