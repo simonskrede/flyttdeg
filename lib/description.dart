@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flyttdeg/takepicture.dart';
 import 'package:flyttdeg/thanks.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:flutter/services.dart';
 
 class DescriptionScreen extends StatefulWidget {
   final String imagePath;
@@ -89,13 +90,20 @@ class DescriptionScreenState extends State<DescriptionScreen> {
   }
 
   void _transmitInfo() async {
+    var file;
+    if(widget.imagePath.isNotEmpty){
+      file = await MultipartFile.fromFile(widget.imagePath, filename: "flyttdeg.jpg");
+    } else {
+      var imageData = (await rootBundle.load('packages/flyttdeg/assets/images/picture.jpg')).buffer.asUint8List();
+      file = MultipartFile.fromBytes(imageData, filename: "flyttdeg.png");
+    }
+
     var formData = FormData.fromMap({
       "position": widget.position.latitude.toString() +
           "," +
           widget.position.longitude.toString(),
       "description": lastTextValue,
-      "file": await MultipartFile.fromFile(widget.imagePath,
-          filename: "flyttdeg.png"),
+      "file": file,
     });
     Dio dio = new Dio();
 

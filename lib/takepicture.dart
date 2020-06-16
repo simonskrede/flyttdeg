@@ -78,7 +78,8 @@ class TakePictureScreenState extends State<TakePictureScreen> {
         future: _initializeControllerFuture,
         builder: (context, snapshot) {
           if (controller == null || !controller.value.isInitialized) {
-            return Center(child: CircularProgressIndicator());
+            return //Center(child: CircularProgressIndicator());
+            Image(image: AssetImage("assets/images/picture.jpg"));
           } else {
             return CameraPreview(controller);
           }

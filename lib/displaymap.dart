@@ -91,7 +91,9 @@ class DisplayMapScreenState extends State<DisplayMapScreen> {
                   ),
                   onMapCreated: (GoogleMapController _controller) {
                     setState(() {
-                      controller.complete(_controller);
+                      if(controller != null){
+                        controller.complete(_controller);
+                      }
                     });
                   },
                   zoomGesturesEnabled: true,
