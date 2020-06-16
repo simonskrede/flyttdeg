@@ -77,8 +77,6 @@ class TakePictureScreenState extends State<TakePictureScreen> {
       body: FutureBuilder<void>(
         future: _initializeControllerFuture,
         builder: (context, snapshot) {
-          print("test: " + controller.value.isInitialized.toString());
-
           if (controller == null || !controller.value.isInitialized) {
             return Center(child: CircularProgressIndicator());
           } else {
