@@ -10,9 +10,10 @@ import 'package:flutter/services.dart';
 class DescriptionScreen extends StatefulWidget {
   final String imagePath;
   final LatLng position;
+  final double zoom;
 
   const DescriptionScreen(
-      {Key key, @required this.imagePath, @required this.position})
+      {Key key, @required this.imagePath, @required this.position, @required this.zoom})
       : super(key: key);
 
   @override
@@ -102,6 +103,7 @@ class DescriptionScreenState extends State<DescriptionScreen> {
       "position": widget.position.latitude.toString() +
           "," +
           widget.position.longitude.toString(),
+      "zoom": widget.zoom.toString(),
       "description": lastTextValue,
       "file": file,
     });

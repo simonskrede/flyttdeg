@@ -27,6 +27,8 @@ class DisplayMapScreenState extends State<DisplayMapScreen> {
 
   static LatLng _initialPosition = new LatLng(59.9062988, 10.7878025);
   static LatLng _lastMapPosition = _initialPosition;
+  static double _initialZoom = 14.4746;
+  static double _lastZoom = _initialZoom;
 
   @override
   void initState() {
@@ -88,7 +90,7 @@ class DisplayMapScreenState extends State<DisplayMapScreen> {
                   mapType: MapType.normal,
                   initialCameraPosition: CameraPosition(
                     target: _initialPosition,
-                    zoom: 14.4746,
+                    zoom: _initialZoom,
                   ),
                   onMapCreated: (GoogleMapController _controller) {
                     setState(() {
@@ -100,6 +102,7 @@ class DisplayMapScreenState extends State<DisplayMapScreen> {
                   zoomGesturesEnabled: true,
                   onCameraMove: (CameraPosition position) {
                     _lastMapPosition = position.target;
+                    _lastZoom = position.zoom;
                   },
                   myLocationEnabled: true,
                   compassEnabled: true,
@@ -116,7 +119,7 @@ class DisplayMapScreenState extends State<DisplayMapScreen> {
       context,
       MaterialPageRoute(
         builder: (context) => DescriptionScreen(
-            position: _lastMapPosition, imagePath: widget.imagePath),
+            position: _lastMapPosition, zoom: _lastZoom, imagePath: widget.imagePath),
       ),
     );
   }
