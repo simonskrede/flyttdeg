@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flyttdeg/takepicture.dart';
 
 class ThanksScreen extends StatefulWidget {
@@ -23,7 +24,7 @@ class ThanksScreenState extends State<ThanksScreen> {
               textAlign: TextAlign.center,
               textScaleFactor: 2)),
       persistentFooterButtons: [
-        FlatButton(
+        PlatformButton(
             child: Text("Flere som skal flytte seg?"), onPressed: _flyttMer)
       ],
     );

@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flyttdeg/takepicture.dart';
 import 'package:flyttdeg/thanks.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -17,12 +18,12 @@ class DescriptionScreen extends StatefulWidget {
   DescriptionScreenState createState() => DescriptionScreenState();
 }
 
-TextField textField = new TextField(
+PlatformTextField textField = new PlatformTextField(
   autofocus: true,
   maxLines: 40,
   style: const TextStyle(color: Colors.black, fontSize: 20.0),
   onChanged: changedText,
-  decoration: new InputDecoration(
+  /*decoration: new InputDecoration(
     /*icon: new Icon(
       Icons.insert_emoticon,
       color: Colors.black,
@@ -32,7 +33,7 @@ TextField textField = new TextField(
     hintStyle: const TextStyle(color: Color(0xFF666666), fontSize: 20.0),
     contentPadding:
         const EdgeInsets.only(top: 40.0, right: 40.0, bottom: 40.0, left: 40.0),
-  ),
+  ),*/
 );
 
 Widget bodySection = new Expanded(
@@ -56,7 +57,7 @@ class DescriptionScreenState extends State<DescriptionScreen> {
           children: <Widget>[
             bodySection,
             ButtonBar(children: [
-              FlatButton(child: Text("Flytt deg!!!"), onPressed: _transmitInfo)
+              PlatformButton(child: Text("Flytt deg!!!"), onPressed: _transmitInfo)
             ]),
           ],
         ),
@@ -77,7 +78,7 @@ class DescriptionScreenState extends State<DescriptionScreen> {
             ),
           ),
           actions: <Widget>[
-            FlatButton(
+            PlatformButton(
               child: Text('Sukk, ok'),
               onPressed: () {
                 Navigator.of(context).pop();

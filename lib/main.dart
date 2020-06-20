@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import 'takepicture.dart';
@@ -18,8 +19,7 @@ Future<void> main() async {
   ].request();
 
   runApp(
-    MaterialApp(
-      theme: ThemeData.dark(),
+    PlatformApp(
       home: TakePictureScreen(),
     ),
   );
