@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:flyttdeg/persistent_buttons.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
@@ -76,7 +76,7 @@ class DisplayMapScreenState extends State<DisplayMapScreen> {
           ? Container(
               child: Center(
                 child: Text(
-                  'loading map..',
+                  'Laster kart ...',
                   style: TextStyle(
                       fontFamily: 'Avenir-Medium', color: Colors.grey[400]),
                 ),
@@ -92,7 +92,7 @@ class DisplayMapScreenState extends State<DisplayMapScreen> {
                   ),
                   onMapCreated: (GoogleMapController _controller) {
                     setState(() {
-                      if(controller != null){
+                      if (controller != null) {
                         controller.complete(_controller);
                       }
                     });
@@ -107,9 +107,7 @@ class DisplayMapScreenState extends State<DisplayMapScreen> {
                 ),
               ]),
             ),
-      persistentFooterButtons: [
-        PlatformButton(child: Text("Flytt deg!!"), onPressed: _savePosition)
-      ],
+      persistentFooterButtons: getFooterButtons("Flytt deg!!", _savePosition),
     );
   }
 

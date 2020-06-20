@@ -25,7 +25,9 @@ class ThanksScreenState extends State<ThanksScreen> {
               textScaleFactor: 2)),
       persistentFooterButtons: [
         PlatformButton(
-            child: Text("Flere som skal flytte seg?"), onPressed: _flyttMer)
+            child: PlatformText("Flere som skal flytte seg?"),
+            onPressed: _flyttMer
+        )
       ],
     );
   }

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:flyttdeg/persistent_buttons.dart';
 import 'package:path/path.dart' show join;
 import 'package:path_provider/path_provider.dart';
 
@@ -86,9 +87,7 @@ class TakePictureScreenState extends State<TakePictureScreen> {
           }
         },
       ),
-      persistentFooterButtons: [
-        PlatformButton(child: Text("Flytt deg!"), onPressed: _takePicture)
-      ],
+      persistentFooterButtons: getFooterButtons("Flytt deg!", _takePicture),
     );
   }
 
@@ -129,3 +128,4 @@ class TakePictureScreenState extends State<TakePictureScreen> {
     }
   }
 }
+

@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:flyttdeg/persistent_buttons.dart';
 import 'package:flyttdeg/takepicture.dart';
 import 'package:flyttdeg/thanks.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -56,9 +57,7 @@ class DescriptionScreenState extends State<DescriptionScreen> {
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             bodySection,
-            ButtonBar(children: [
-              PlatformButton(child: Text("Flytt deg!!!"), onPressed: _transmitInfo)
-            ]),
+            ButtonBar(children: getFooterButtons("Flytt deg!!!", _transmitInfo)),
           ],
         ),
       ),
