@@ -16,7 +16,7 @@ PODS:
   - GoogleMaps/Base (3.9.0)
   - GoogleMaps/Maps (3.9.0):
     - GoogleMaps/Base
-  - location_permissions (3.0.0):
+  - "location_permissions (3.0.0+1)":
     - Flutter
   - path_provider (0.0.1):
     - Flutter
@@ -24,7 +24,7 @@ PODS:
     - Flutter
   - path_provider_macos (0.0.1):
     - Flutter
-  - "permission_handler (5.0.0+hotfix.8)":
+  - permission_handler (5.0.1):
     - Flutter
 
 DEPENDENCIES:
@@ -76,11 +76,11 @@ SPEC CHECKSUMS:
   google_api_availability: 15fa42a8cd83c0a6738507ffe6e87096f12abcb8
   google_maps_flutter: df4e7de95264aa0a2f11aac0fc7e313acb8ffc7e
   GoogleMaps: 4b5346bddfe6911bb89155d43c903020170523ac
-  location_permissions: 42abd62dcc866b92e06506772d2cc42d14be7bb0
+  location_permissions: 7e0f9aa0f60deb8ff93ddf0e2a164c7e8197bc94
   path_provider: abfe2b5c733d04e238b0d8691db0cfd63a27a93c
   path_provider_linux: 4d630dc393e1f20364f3e3b4a2ff41d9674a84e4
   path_provider_macos: f760a3c5b04357c380e2fddb6f9db6f3015897e0
-  permission_handler: c2a19c5cb3ed2d7054fc4baa8ff1b86f5dcfedfd
+  permission_handler: 7022f8972d2d85ce95c1040db945f28bdbfa45d1
 
 PODFILE CHECKSUM: f45d293502bdcca725aca7bc62af43ad173e1292
 
