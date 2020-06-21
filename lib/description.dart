@@ -1,11 +1,11 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flyttdeg/persistent_buttons.dart';
 import 'package:flyttdeg/takepicture.dart';
 import 'package:flyttdeg/thanks.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:flutter/services.dart';
 
 class DescriptionScreen extends StatefulWidget {
   final String imagePath;
@@ -13,7 +13,10 @@ class DescriptionScreen extends StatefulWidget {
   final double zoom;
 
   const DescriptionScreen(
-      {Key key, @required this.imagePath, @required this.position, @required this.zoom})
+      {Key key,
+      @required this.imagePath,
+      @required this.position,
+      @required this.zoom})
       : super(key: key);
 
   @override
@@ -25,17 +28,17 @@ PlatformTextField textField = new PlatformTextField(
   maxLines: 40,
   style: const TextStyle(color: Colors.black, fontSize: 20.0),
   onChanged: changedText,
-  /*decoration: new InputDecoration(
-    /*icon: new Icon(
-      Icons.insert_emoticon,
-      color: Colors.black,
-    ),*/
+  material: (_, __) => MaterialTextFieldData(
+      decoration: new InputDecoration(
     border: InputBorder.none,
     hintText: "Beskriv hvorfor denne bør flytte seg ...",
     hintStyle: const TextStyle(color: Color(0xFF666666), fontSize: 20.0),
     contentPadding:
         const EdgeInsets.only(top: 40.0, right: 40.0, bottom: 40.0, left: 40.0),
-  ),*/
+  )),
+  cupertino: (_, __) => CupertinoTextFieldData(
+      placeholder: "Beskriv hvorfor denne bør flytte seg ..."
+  ),
 );
 
 Widget bodySection = new Expanded(
@@ -58,7 +61,8 @@ class DescriptionScreenState extends State<DescriptionScreen> {
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             bodySection,
-            ButtonBar(children: getFooterButtons("Flytt deg!!!", _transmitInfo)),
+            ButtonBar(
+                children: getFooterButtons("Flytt deg!!!", _transmitInfo)),
           ],
         ),
       ),
@@ -92,10 +96,14 @@ class DescriptionScreenState extends State<DescriptionScreen> {
 
   void _transmitInfo() async {
     var file;
-    if(widget.imagePath.isNotEmpty){
-      file = await MultipartFile.fromFile(widget.imagePath, filename: "flyttdeg.jpg");
+    if (widget.imagePath.isNotEmpty) {
+      file = await MultipartFile.fromFile(widget.imagePath,
+          filename: "flyttdeg.jpg");
     } else {
-      var imageData = (await rootBundle.load('packages/flyttdeg/assets/images/picture.jpg')).buffer.asUint8List();
+      var imageData =
+          (await rootBundle.load('packages/flyttdeg/assets/images/picture.jpg'))
+              .buffer
+              .asUint8List();
       file = MultipartFile.fromBytes(imageData, filename: "flyttdeg.png");
     }
 
@@ -107,10 +115,9 @@ class DescriptionScreenState extends State<DescriptionScreen> {
       "description": lastTextValue,
       "file": file,
     });
-    Dio dio = new Dio();
 
     try {
-      await dio.post("https://flyttdeg.no/flyttdeg", data: formData);
+      await new Dio().post("https://flyttdeg.no/flyttdeg", data: formData);
     } on DioError catch (e) {
       await _showMyDialog(
           'Noe gikk galt, flytting er tilsynelatende vanskelig i dag :-|');
