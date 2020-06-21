@@ -37,7 +37,14 @@ PlatformTextField textField = new PlatformTextField(
         const EdgeInsets.only(top: 40.0, right: 40.0, bottom: 40.0, left: 40.0),
   )),
   cupertino: (_, __) => CupertinoTextFieldData(
-      placeholder: "Beskriv hvorfor denne bør flytte seg ..."
+      placeholder: "Beskriv hvorfor denne bør flytte seg ...",
+    decoration: new BoxDecoration(
+      border: Border.all(
+        color: Colors.white,
+        width: 12,
+      ),
+      borderRadius: BorderRadius.circular(8),
+    )
   ),
 );
 
