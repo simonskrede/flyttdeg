@@ -5,7 +5,7 @@ import 'package:flyttdeg/takepicture.dart';
 
 class ThanksScreen extends StatefulWidget {
   const ThanksScreen({
-    Key key,
+    Key? key,
   }) : super(key: key);
 
   @override

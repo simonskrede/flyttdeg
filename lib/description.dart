@@ -9,14 +9,14 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class DescriptionScreen extends StatefulWidget {
   final String imagePath;
-  final LatLng position;
+  final LatLng? position;
   final double zoom;
 
   const DescriptionScreen(
-      {Key key,
-      @required this.imagePath,
-      @required this.position,
-      @required this.zoom})
+      {Key? key,
+      required this.imagePath,
+      required this.position,
+      required this.zoom})
       : super(key: key);
 
   @override
@@ -117,9 +117,9 @@ class DescriptionScreenState extends State<DescriptionScreen> {
     }
 
     var formData = FormData.fromMap({
-      "position": widget.position.latitude.toString() +
+      "position": widget.position!.latitude.toString() +
           "," +
-          widget.position.longitude.toString(),
+          widget.position!.longitude.toString(),
       "zoom": widget.zoom.toString(),
       "description": lastTextValue,
       "file": file,

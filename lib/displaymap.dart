@@ -12,8 +12,8 @@ class DisplayMapScreen extends StatefulWidget {
   final String imagePath;
 
   const DisplayMapScreen({
-    Key key,
-    @required this.imagePath,
+    Key? key,
+    required this.imagePath,
   }) : super(key: key);
 
   @override
@@ -21,12 +21,12 @@ class DisplayMapScreen extends StatefulWidget {
 }
 
 class DisplayMapScreenState extends State<DisplayMapScreen> {
-  Completer<GoogleMapController> controller;
+  Completer<GoogleMapController>? controller;
 
   Geolocator geolocator = Geolocator();
 
-  static LatLng _initialPosition = new LatLng(59.9062988, 10.7878025);
-  static LatLng _lastMapPosition = _initialPosition;
+  static LatLng? _initialPosition = new LatLng(59.9062988, 10.7878025);
+  static LatLng? _lastMapPosition = _initialPosition;
   static double _initialZoom = 14.4746;
   static double _lastZoom = _initialZoom;
 
@@ -51,23 +51,23 @@ class DisplayMapScreenState extends State<DisplayMapScreen> {
 
     var channel = MethodChannel('flutter.baseflow.com/geolocator/methods');
     Map<String, dynamic> params = <String, dynamic>{
-      'accuracy': LocationAccuracy.high.value,
+      'accuracy': LocationAccuracy.high,
       'distanceFilter': 0,
       'forceAndroidLocationManager': false, // <- choose what's best for you
       'timeInterval': 0,
     };
-    Map<dynamic, dynamic> positionMap = await channel.invokeMethod(
+    Map<dynamic, dynamic> positionMap = await (channel.invokeMethod(
       'getCurrentPosition',
       params,
-    );
+    ) as FutureOr<Map<dynamic, dynamic>>);
 
 // Get the properties you need here. You may want to check if they exist first.
-    double latitude = positionMap['latitude'];
-    double longitude = positionMap['longitude'];
+    double? latitude = positionMap['latitude'];
+    double? longitude = positionMap['longitude'];
 
     print("done getting location");
     setState(() {
-      _initialPosition = LatLng(latitude, longitude);
+      _initialPosition = LatLng(latitude!, longitude!);
     });
   }
 
@@ -89,13 +89,13 @@ class DisplayMapScreenState extends State<DisplayMapScreen> {
                 GoogleMap(
                   mapType: MapType.normal,
                   initialCameraPosition: CameraPosition(
-                    target: _initialPosition,
+                    target: _initialPosition!,
                     zoom: _initialZoom,
                   ),
                   onMapCreated: (GoogleMapController _controller) {
                     setState(() {
                       if (controller != null) {
-                        controller.complete(_controller);
+                        controller!.complete(_controller);
                       }
                     });
                   },

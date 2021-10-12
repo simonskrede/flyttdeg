@@ -12,7 +12,7 @@ import 'displaymap.dart';
 // A screen that allows users to take a picture using a given camera.
 class TakePictureScreen extends StatefulWidget {
   const TakePictureScreen({
-    Key key,
+    Key? key,
   }) : super(key: key);
 
   @override
@@ -20,18 +20,18 @@ class TakePictureScreen extends StatefulWidget {
 }
 
 class TakePictureScreenState extends State<TakePictureScreen> {
-  CameraController controller;
+  CameraController? controller;
 
-  Future<void> _initializeControllerFuture;
+  Future<void>? _initializeControllerFuture;
 
-  List<CameraDescription> cameras;
+  late List<CameraDescription> cameras;
 
   bool _isReady = false;
 
   @override
   void didUpdateWidget(TakePictureScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
-    controller.initialize();
+    controller!.initialize();
   }
 
   @override
@@ -52,7 +52,7 @@ class TakePictureScreenState extends State<TakePictureScreen> {
 
       controller = new CameraController(cameras[0], ResolutionPreset.medium,
           enableAudio: false);
-      await controller.initialize();
+      await controller!.initialize();
     } on CameraException catch (_) {
       print(_);
     }
@@ -65,7 +65,7 @@ class TakePictureScreenState extends State<TakePictureScreen> {
   @override
   void dispose() {
     // Dispose of the controller when the widget is disposed.
-    controller.dispose();
+    controller!.dispose();
     super.dispose();
   }
 
@@ -79,11 +79,11 @@ class TakePictureScreenState extends State<TakePictureScreen> {
       body: FutureBuilder<void>(
         future: _initializeControllerFuture,
         builder: (context, snapshot) {
-          if (controller == null || !controller.value.isInitialized) {
+          if (controller == null || !controller!.value.isInitialized) {
             return //Center(child: CircularProgressIndicator());
             Image(image: AssetImage("assets/images/picture.jpg"));
           } else {
-            return CameraPreview(controller);
+            return CameraPreview(controller!);
           }
         },
       ),
@@ -110,7 +110,7 @@ class TakePictureScreenState extends State<TakePictureScreen> {
         );
 
         // Attempt to take a picture and log where it's been saved.
-        await controller.takePicture(path);
+        await controller!.takePicture();
       } else {
         path = "";
       }
