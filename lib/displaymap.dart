@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flyttdeg/persistent_buttons.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -36,38 +35,48 @@ class DisplayMapScreenState extends State<DisplayMapScreen> {
     _initialPosition = null;
     print("established geolocator");
 
-    _getUserLocation();
+    _determinePosition();
   }
 
-  void _getUserLocation() async {
-    /*print("checking permission");
+  void _determinePosition() async {
+    bool serviceEnabled;
+    LocationPermission permission;
 
-    await Geolocator().checkGeolocationPermissionStatus(locationPermission: GeolocationPermission.locationWhenInUse);
+    // Test if location services are enabled.
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      // Location services are not enabled don't continue
+      // accessing the position and request users of the
+      // App to enable the location services.
+      return Future.error('Location services are disabled.');
+    }
 
-    print("getting location");
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        // Permissions are denied, next time you could try
+        // requesting permissions again (this is also where
+        // Android's shouldShowRequestPermissionRationale
+        // returned true. According to Android guidelines
+        // your App should show an explanatory UI now.
+        return Future.error('Location permissions are denied');
+      }
+    }
 
-    Position position = await Geolocator()
-        .getCurrentPosition(desiredAccuracy: LocationAccuracy.best, locationPermissionLevel: GeolocationPermission.locationWhenInUse);*/
+    if (permission == LocationPermission.deniedForever) {
+      // Permissions are denied forever, handle appropriately.
+      return Future.error(
+          'Location permissions are permanently denied, we cannot request permissions.');
+    }
 
-    var channel = MethodChannel('flutter.baseflow.com/geolocator/methods');
-    Map<String, dynamic> params = <String, dynamic>{
-      'accuracy': LocationAccuracy.high,
-      'distanceFilter': 0,
-      'forceAndroidLocationManager': false, // <- choose what's best for you
-      'timeInterval': 0,
-    };
-    Map<dynamic, dynamic> positionMap = await (channel.invokeMethod(
-      'getCurrentPosition',
-      params,
-    ) as FutureOr<Map<dynamic, dynamic>>);
-
-// Get the properties you need here. You may want to check if they exist first.
-    double? latitude = positionMap['latitude'];
-    double? longitude = positionMap['longitude'];
+    // When we reach here, permissions are granted and we can
+    // continue accessing the position of the device.
+    final position = await Geolocator.getCurrentPosition();
 
     print("done getting location");
     setState(() {
-      _initialPosition = LatLng(latitude!, longitude!);
+      _initialPosition = LatLng(position.latitude, position.longitude);
     });
   }
 
@@ -76,40 +85,40 @@ class DisplayMapScreenState extends State<DisplayMapScreen> {
     return Scaffold(
       body: _initialPosition == null
           ? Container(
-              child: Center(
-                child: Text(
-                  'Laster kart ...',
-                  style: TextStyle(
-                      fontFamily: 'Avenir-Medium', color: Colors.grey[400]),
-                ),
-              ),
-            )
+        child: Center(
+          child: Text(
+            'Laster kart ...',
+            style: TextStyle(
+                fontFamily: 'Avenir-Medium', color: Colors.grey[400]),
+          ),
+        ),
+      )
           : Container(
-              child: Stack(children: <Widget>[
-                GoogleMap(
-                  mapType: MapType.normal,
-                  initialCameraPosition: CameraPosition(
-                    target: _initialPosition!,
-                    zoom: _initialZoom,
-                  ),
-                  onMapCreated: (GoogleMapController _controller) {
-                    setState(() {
-                      if (controller != null) {
-                        controller!.complete(_controller);
-                      }
-                    });
-                  },
-                  zoomGesturesEnabled: true,
-                  onCameraMove: (CameraPosition position) {
-                    _lastMapPosition = position.target;
-                    _lastZoom = position.zoom;
-                  },
-                  myLocationEnabled: true,
-                  compassEnabled: true,
-                  myLocationButtonEnabled: false,
-                ),
-              ]),
+        child: Stack(children: <Widget>[
+          GoogleMap(
+            mapType: MapType.normal,
+            initialCameraPosition: CameraPosition(
+              target: _initialPosition!,
+              zoom: _initialZoom,
             ),
+            onMapCreated: (GoogleMapController _controller) {
+              setState(() {
+                if (controller != null) {
+                  controller!.complete(_controller);
+                }
+              });
+            },
+            zoomGesturesEnabled: true,
+            onCameraMove: (CameraPosition position) {
+              _lastMapPosition = position.target;
+              _lastZoom = position.zoom;
+            },
+            myLocationEnabled: true,
+            compassEnabled: true,
+            myLocationButtonEnabled: false,
+          ),
+        ]),
+      ),
       persistentFooterButtons: getFooterButtons("Flytt deg!!", _savePosition),
     );
   }
@@ -118,8 +127,11 @@ class DisplayMapScreenState extends State<DisplayMapScreen> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => DescriptionScreen(
-            position: _lastMapPosition, zoom: _lastZoom, imagePath: widget.imagePath),
+        builder: (context) =>
+            DescriptionScreen(
+                position: _lastMapPosition,
+                zoom: _lastZoom,
+                imagePath: widget.imagePath),
       ),
     );
   }
