@@ -26,7 +26,7 @@ class DisplayMapScreenState extends State<DisplayMapScreen> {
 
   static LatLng? _initialPosition = new LatLng(59.9062988, 10.7878025);
   static LatLng? _lastMapPosition = _initialPosition;
-  static double _initialZoom = 14.4746;
+  static double _initialZoom = 18;
   static double _lastZoom = _initialZoom;
 
   @override
