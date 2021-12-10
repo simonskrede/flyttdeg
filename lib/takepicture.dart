@@ -95,33 +95,25 @@ class TakePictureScreenState extends State<TakePictureScreen> {
     // Take the PathPicture in a try / catch block. If anything goes wrong,
     // catch the error.
     try {
-      String path = "";
+      XFile savedPath;
       if (cameras.isNotEmpty) {
         // Ensure that the camera is initialized.
         await _initializeControllerFuture;
 
-        // Construct the path where the image should be saved using the
-        // pattern package.
-        path = join(
-          // Store the picture in the temp directory.
-          // Find the temp directory using the `path_provider` plugin.
-          (await getTemporaryDirectory()).path,
-          '${DateTime.now()}.png',
-        );
-
         // Attempt to take a picture and log where it's been saved.
-        await controller!.takePicture();
+        savedPath = await controller!.takePicture();
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => DisplayMapScreen(imagePath: savedPath.path),
+          ),
+        );
       } else {
-        path = "";
+        // Error of some kind - be smart
       }
 
       // If the picture was taken, display it on a new screen.
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => DisplayMapScreen(imagePath: path),
-        ),
-      );
     } catch (e) {
       // If an error occurs, log the error to the console.
       print(e);
