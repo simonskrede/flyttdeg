@@ -22,6 +22,10 @@
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>To take pictures of malparked cars..</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>For sending info om hvor den feilparkerte bilen står.</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
@@ -42,12 +46,6 @@
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
 	<key>io.flutter.embedded_views_preview</key>
-	<true/>
-	<key>NSCameraUsageDescription</key>
-	<string>To take pictures of malparked cars..</string>
-	<key>io.flutter.embedded_views_preview</key>
-        <string>YES</string>
-	<key>NSLocationWhenInUseUsageDescription</key>
-        <string>For sending info om hvor den feilparkerte bilen står.</string>
+	<string>YES</string>
 </dict>
 </plist>
