@@ -70,7 +70,8 @@ class DescriptionScreenState extends State<DescriptionScreen> {
           children: <Widget>[
             bodySection,
             ButtonBar(
-                children: getFooterButtons("Flytt deg!!!", _transmitInfo)),
+                children:
+                    getFooterButtons("Flytt deg!!!", _transmitInfo, context)),
           ],
         ),
       ),

@@ -24,7 +24,8 @@ class ThanksScreenState extends State<ThanksScreen> {
               'Takk, nå er det Bymiljøetaten som forhåpentligvis sørger for flytting!',
               textAlign: TextAlign.center,
               textScaleFactor: 2)),
-      persistentFooterButtons: getFooterButtons("Flere som skal flytte seg?", _flyttMer),
+      persistentFooterButtons:
+          getFooterButtons("Flere som skal flytte seg?", _flyttMer, context),
     );
   }
 

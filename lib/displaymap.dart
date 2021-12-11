@@ -85,41 +85,42 @@ class DisplayMapScreenState extends State<DisplayMapScreen> {
     return Scaffold(
       body: _initialPosition == null
           ? Container(
-        child: Center(
-          child: Text(
-            'Laster kart ...',
-            style: TextStyle(
-                fontFamily: 'Avenir-Medium', color: Colors.grey[400]),
-          ),
-        ),
-      )
+              child: Center(
+                child: Text(
+                  'Laster kart ...',
+                  style: TextStyle(
+                      fontFamily: 'Avenir-Medium', color: Colors.grey[400]),
+                ),
+              ),
+            )
           : Container(
-        child: Stack(children: <Widget>[
-          GoogleMap(
-            mapType: MapType.normal,
-            initialCameraPosition: CameraPosition(
-              target: _initialPosition!,
-              zoom: _initialZoom,
+              child: Stack(children: <Widget>[
+                GoogleMap(
+                  mapType: MapType.normal,
+                  initialCameraPosition: CameraPosition(
+                    target: _initialPosition!,
+                    zoom: _initialZoom,
+                  ),
+                  onMapCreated: (GoogleMapController _controller) {
+                    setState(() {
+                      if (controller != null) {
+                        controller!.complete(_controller);
+                      }
+                    });
+                  },
+                  zoomGesturesEnabled: true,
+                  onCameraMove: (CameraPosition position) {
+                    _lastMapPosition = position.target;
+                    _lastZoom = position.zoom;
+                  },
+                  myLocationEnabled: true,
+                  compassEnabled: true,
+                  myLocationButtonEnabled: false,
+                ),
+              ]),
             ),
-            onMapCreated: (GoogleMapController _controller) {
-              setState(() {
-                if (controller != null) {
-                  controller!.complete(_controller);
-                }
-              });
-            },
-            zoomGesturesEnabled: true,
-            onCameraMove: (CameraPosition position) {
-              _lastMapPosition = position.target;
-              _lastZoom = position.zoom;
-            },
-            myLocationEnabled: true,
-            compassEnabled: true,
-            myLocationButtonEnabled: false,
-          ),
-        ]),
-      ),
-      persistentFooterButtons: getFooterButtons("Flytt deg!!", _savePosition),
+      persistentFooterButtons:
+          getFooterButtons("Flytt deg!!", _savePosition, context),
     );
   }
 
@@ -127,11 +128,10 @@ class DisplayMapScreenState extends State<DisplayMapScreen> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) =>
-            DescriptionScreen(
-                position: _lastMapPosition,
-                zoom: _lastZoom,
-                imagePath: widget.imagePath),
+        builder: (context) => DescriptionScreen(
+            position: _lastMapPosition,
+            zoom: _lastZoom,
+            imagePath: widget.imagePath),
       ),
     );
   }
