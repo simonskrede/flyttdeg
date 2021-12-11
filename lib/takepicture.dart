@@ -81,7 +81,7 @@ class TakePictureScreenState extends State<TakePictureScreen> {
         builder: (context, snapshot) {
           if (controller == null || !controller!.value.isInitialized) {
             return //Center(child: CircularProgressIndicator());
-            Image(image: AssetImage("assets/images/picture.jpg"));
+                Image(image: AssetImage("assets/images/picture.jpg"));
           } else {
             return CameraPreview(controller!);
           }
@@ -95,24 +95,23 @@ class TakePictureScreenState extends State<TakePictureScreen> {
     // Take the PathPicture in a try / catch block. If anything goes wrong,
     // catch the error.
     try {
-      XFile savedPath;
+      String savedPath;
       if (cameras.isNotEmpty) {
         // Ensure that the camera is initialized.
         await _initializeControllerFuture;
 
         // Attempt to take a picture and log where it's been saved.
-        savedPath = await controller!.takePicture();
-
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => DisplayMapScreen(imagePath: savedPath.path),
-          ),
-        );
+        XFile picture = await controller!.takePicture();
+        savedPath = picture.path;
       } else {
-        // Error of some kind - be smart
+        savedPath = "";
       }
-
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => DisplayMapScreen(imagePath: savedPath),
+        ),
+      );
       // If the picture was taken, display it on a new screen.
     } catch (e) {
       // If an error occurs, log the error to the console.
@@ -120,4 +119,3 @@ class TakePictureScreenState extends State<TakePictureScreen> {
     }
   }
 }
-
