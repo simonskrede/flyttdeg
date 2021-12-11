@@ -87,7 +87,8 @@ class TakePictureScreenState extends State<TakePictureScreen> {
           }
         },
       ),
-      persistentFooterButtons: getFooterButtons("Flytt deg!", _takePicture),
+      persistentFooterButtons:
+          getFooterButtons("Flytt deg!", _takePicture, context),
     );
   }
 
