@@ -37,17 +37,17 @@ PlatformTextField textField = new PlatformTextField(
         const EdgeInsets.only(top: 40.0, right: 40.0, bottom: 40.0, left: 40.0),
   )),
   cupertino: (_, __) => CupertinoTextFieldData(
-    style: const TextStyle(color: Colors.black, fontSize: 20.0),
+      style: const TextStyle(color: Colors.black, fontSize: 20.0),
       placeholder: "Beskriv hvorfor denne bør flytte seg ...",
-    placeholderStyle: const TextStyle(color: Color(0xFF666666), fontSize: 20.0),
-    decoration: new BoxDecoration(
-      border: Border.all(
-        color: Colors.white,
-        width: 12,
-      ),
-      borderRadius: BorderRadius.circular(8),
-    )
-  ),
+      placeholderStyle:
+          const TextStyle(color: Color(0xFF666666), fontSize: 20.0),
+      decoration: new BoxDecoration(
+        border: Border.all(
+          color: Colors.white,
+          width: 12,
+        ),
+        borderRadius: BorderRadius.circular(8),
+      )),
 );
 
 Widget bodySection = new Expanded(
@@ -62,8 +62,7 @@ class DescriptionScreenState extends State<DescriptionScreen> {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-      body: new Padding(
-        padding: new EdgeInsets.symmetric(vertical: 0.0, horizontal: 0.0),
+      body: new SafeArea(
         child: Column(
           // This makes each child fill the full width of the screen
           crossAxisAlignment: CrossAxisAlignment.stretch,
