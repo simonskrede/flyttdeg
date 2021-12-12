@@ -17,9 +17,10 @@ class TakePictureScreen extends StatefulWidget {
 
   @override
   TakePictureScreenState createState() => TakePictureScreenState();
+
 }
 
-class TakePictureScreenState extends State<TakePictureScreen> {
+class TakePictureScreenState extends State<TakePictureScreen> with WidgetsBindingObserver {
   CameraController? controller;
 
   Future<void>? _initializeControllerFuture;
@@ -27,6 +28,15 @@ class TakePictureScreenState extends State<TakePictureScreen> {
   late List<CameraDescription> cameras;
 
   bool _isReady = false;
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+
+    if (state == AppLifecycleState.resumed) {
+      controller?.initialize();
+    }
+  }
 
   @override
   void didUpdateWidget(TakePictureScreen oldWidget) {
