@@ -82,6 +82,10 @@ class DisplayMapScreenState extends State<DisplayMapScreen> {
 
   @override
   Widget build(BuildContext context) {
+    double mapWidth = MediaQuery.of(context).size.width;
+    double mapHeight = MediaQuery.of(context).size.height - 70;
+    double iconSize = 40.0;
+
     return Scaffold(
       body: _initialPosition == null
           ? Container(
@@ -94,7 +98,7 @@ class DisplayMapScreenState extends State<DisplayMapScreen> {
               ),
             )
           : Container(
-              child: Stack(children: <Widget>[
+              child: Stack(alignment: Alignment(0.0, 0.0), children: <Widget>[
                 GoogleMap(
                   mapType: MapType.normal,
                   initialCameraPosition: CameraPosition(
@@ -117,6 +121,11 @@ class DisplayMapScreenState extends State<DisplayMapScreen> {
                   compassEnabled: true,
                   myLocationButtonEnabled: false,
                 ),
+                new Positioned(
+                  top: (mapHeight - iconSize) / 2,
+                  right: (mapWidth - iconSize) / 2,
+                  child: new Icon(Icons.person_pin_circle, size: iconSize),
+                )
               ]),
             ),
       persistentFooterButtons:
