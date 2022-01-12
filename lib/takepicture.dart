@@ -7,6 +7,7 @@ import 'package:flyttdeg/persistent_buttons.dart';
 //import 'package:restart_app/restart_app.dart';
 
 import 'displaymap.dart';
+import 'globals.dart';
 
 // A screen that allows users to take a picture using a given camera.
 class TakePictureScreen extends StatefulWidget {
@@ -16,79 +17,40 @@ class TakePictureScreen extends StatefulWidget {
 
   @override
   TakePictureScreenState createState() => TakePictureScreenState();
-
 }
 
-class TakePictureScreenState extends State<TakePictureScreen> with WidgetsBindingObserver {
-  CameraController? controller;
-
+class TakePictureScreenState extends State<TakePictureScreen>
+    with WidgetsBindingObserver {
+  late CameraController controller;
   late CameraPreview preview;
-
   Future<void>? _initializeControllerFuture;
 
-  late List<CameraDescription> cameras;
-
-  bool _isReady = false;
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    // App state changed before we got the chance to initialize.
-    if (controller == null || !controller!.value.isInitialized) {
-      return;
-    }
-    if (state == AppLifecycleState.inactive) {
-      controller?.dispose();
-    } else if (state == AppLifecycleState.resumed) {
-      if (controller != null) {
-        _setupCameras();
-        if (mounted) {
-          setState(() {});
-        }
-      }
-    }
-  }
-
-  /*@override
-  void didUpdateWidget(TakePictureScreen oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    controller!.initialize();
-  }*/
+  int selectedCamera = 0;
 
   @override
   void initState() {
     super.initState();
-    _setupCameras();
+    initializeCamera(selectedCamera);
     WidgetsBinding.instance!.addObserver(this);
   }
 
   @override
   void dispose() {
-    WidgetsBinding.instance!.removeObserver(this);
+    // Dispose of the controller when the widget is disposed.
+    controller.dispose();
     super.dispose();
   }
 
-  Future<void> _setupCameras() async {
-    try {
-      // initialize cameras.
-      cameras = await availableCameras();
-      // initialize camera controllers.
-      if (cameras.isEmpty) {
-        print("Empty cameras");
-        return;
-      }
+  initializeCamera(int cameraIndex) async {
+    controller = CameraController(
+      // Get a specific camera from the list of available cameras.
+      cameras![cameraIndex],
+      // Define the resolution to use.
+      ResolutionPreset.high
+    );
 
-      controller?.dispose();
-
-      controller = new CameraController(cameras[0], ResolutionPreset.medium,
-          enableAudio: false);
-      await controller!.initialize();
-    } on CameraException catch (_) {
-      print(_);
-    }
-    if (!mounted) return;
-    setState(() {
-      _isReady = true;
-    });
+    // Next, initialize the controller. This returns a Future.
+    _initializeControllerFuture = controller.initialize();
   }
 
   @override
@@ -101,12 +63,12 @@ class TakePictureScreenState extends State<TakePictureScreen> with WidgetsBindin
       body: FutureBuilder<void>(
         future: _initializeControllerFuture,
         builder: (context, snapshot) {
-          if (controller == null || !controller!.value.isInitialized) {
-            return //Center(child: CircularProgressIndicator());
-                Image(image: AssetImage("assets/images/picture.jpg"));
+          if (snapshot.connectionState == ConnectionState.done) {
+            // If the Future is complete, display the preview.
+            return CameraPreview(controller);
           } else {
-            preview = CameraPreview(controller!);
-            return preview;
+            // Otherwise, display a loading indicator.
+            return const Center(child: CircularProgressIndicator());
           }
         },
       ),
@@ -120,7 +82,7 @@ class TakePictureScreenState extends State<TakePictureScreen> with WidgetsBindin
     // catch the error.
     try {
       String savedPath;
-      if (cameras.isNotEmpty) {
+      if (cameras != null) {
         // Ensure that the camera is initialized.
         await _initializeControllerFuture;
 
@@ -128,12 +90,12 @@ class TakePictureScreenState extends State<TakePictureScreen> with WidgetsBindin
           // Attempt to take a picture and log where it's been saved.
           XFile picture = await controller!.takePicture();
           savedPath = picture.path;
-        } catch (ex){
+        } catch (ex) {
           //Restart.restartApp();
           return;
         }
 
-        controller?.pausePreview();
+        controller.pausePreview();
       } else {
         savedPath = "";
       }
