@@ -2,10 +2,9 @@ import 'dart:async';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flyttdeg/persistent_buttons.dart';
-import 'package:path/path.dart' show join;
-import 'package:path_provider/path_provider.dart';
+
+//import 'package:restart_app/restart_app.dart';
 
 import 'displaymap.dart';
 
@@ -23,6 +22,8 @@ class TakePictureScreen extends StatefulWidget {
 class TakePictureScreenState extends State<TakePictureScreen> with WidgetsBindingObserver {
   CameraController? controller;
 
+  late CameraPreview preview;
+
   Future<void>? _initializeControllerFuture;
 
   late List<CameraDescription> cameras;
@@ -31,23 +32,39 @@ class TakePictureScreenState extends State<TakePictureScreen> with WidgetsBindin
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    super.didChangeAppLifecycleState(state);
-
-    if (state == AppLifecycleState.resumed) {
-      controller?.initialize();
+    // App state changed before we got the chance to initialize.
+    if (controller == null || !controller!.value.isInitialized) {
+      return;
+    }
+    if (state == AppLifecycleState.inactive) {
+      controller?.dispose();
+    } else if (state == AppLifecycleState.resumed) {
+      if (controller != null) {
+        _setupCameras();
+        if (mounted) {
+          setState(() {});
+        }
+      }
     }
   }
 
-  @override
+  /*@override
   void didUpdateWidget(TakePictureScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
     controller!.initialize();
-  }
+  }*/
 
   @override
   void initState() {
     super.initState();
     _setupCameras();
+    WidgetsBinding.instance!.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance!.removeObserver(this);
+    super.dispose();
   }
 
   Future<void> _setupCameras() async {
@@ -60,6 +77,8 @@ class TakePictureScreenState extends State<TakePictureScreen> with WidgetsBindin
         return;
       }
 
+      controller?.dispose();
+
       controller = new CameraController(cameras[0], ResolutionPreset.medium,
           enableAudio: false);
       await controller!.initialize();
@@ -70,13 +89,6 @@ class TakePictureScreenState extends State<TakePictureScreen> with WidgetsBindin
     setState(() {
       _isReady = true;
     });
-  }
-
-  @override
-  void dispose() {
-    // Dispose of the controller when the widget is disposed.
-    controller!.dispose();
-    super.dispose();
   }
 
   @override
@@ -93,7 +105,8 @@ class TakePictureScreenState extends State<TakePictureScreen> with WidgetsBindin
             return //Center(child: CircularProgressIndicator());
                 Image(image: AssetImage("assets/images/picture.jpg"));
           } else {
-            return CameraPreview(controller!);
+            preview = CameraPreview(controller!);
+            return preview;
           }
         },
       ),
@@ -111,12 +124,20 @@ class TakePictureScreenState extends State<TakePictureScreen> with WidgetsBindin
         // Ensure that the camera is initialized.
         await _initializeControllerFuture;
 
-        // Attempt to take a picture and log where it's been saved.
-        XFile picture = await controller!.takePicture();
-        savedPath = picture.path;
+        try {
+          // Attempt to take a picture and log where it's been saved.
+          XFile picture = await controller!.takePicture();
+          savedPath = picture.path;
+        } catch (ex){
+          //Restart.restartApp();
+          return;
+        }
+
+        controller?.pausePreview();
       } else {
         savedPath = "";
       }
+
       Navigator.push(
         context,
         MaterialPageRoute(

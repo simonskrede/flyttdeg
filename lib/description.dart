@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -138,6 +140,14 @@ class DescriptionScreenState extends State<DescriptionScreen> {
         ),
       );
       return;
+    } finally {
+      var _deleteFile = File(widget.imagePath);
+      try {
+        if (await _deleteFile.exists()) {
+          await _deleteFile.delete();
+        }
+      } catch (e) {
+      }
     }
 
     Navigator.push(
