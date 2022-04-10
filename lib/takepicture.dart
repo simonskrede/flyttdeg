@@ -4,8 +4,6 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flyttdeg/persistent_buttons.dart';
 
-//import 'package:restart_app/restart_app.dart';
-
 import 'displaymap.dart';
 import 'globals.dart';
 
@@ -21,57 +19,96 @@ class TakePictureScreen extends StatefulWidget {
 
 class TakePictureScreenState extends State<TakePictureScreen>
     with WidgetsBindingObserver {
-  late CameraController controller;
-  late CameraPreview preview;
-  Future<void>? _initializeControllerFuture;
+  CameraController? controller;
+
+  bool _isCameraInitialized = false;
 
   int selectedCamera = 0;
 
   @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    print("didChangeAppLifecycleState: " + state.toString());
+    final CameraController? cameraController = controller;
+
+    // App state changed before we got the chance to initialize.
+    if (cameraController == null || !cameraController.value.isInitialized) {
+      return;
+    }
+
+    print("didChangeAppLifecycleState got past nullcheck");
+
+    if (state == AppLifecycleState.inactive) {
+      // Free up memory when camera not active
+      cameraController.dispose();
+    } else if (state == AppLifecycleState.resumed) {
+      // Reinitialize the camera with same properties
+      onNewCameraSelected(cameraController.description);
+    }
+  }
+
+  void onNewCameraSelected(CameraDescription cameraDescription) async {
+    print("Inside onNewCameraSelected");
+    final previousCameraController = controller;
+    // Instantiating the camera controller
+    final CameraController cameraController = CameraController(
+      cameraDescription,
+      ResolutionPreset.high,
+      imageFormatGroup: ImageFormatGroup.jpeg,
+    );
+
+    // Dispose the previous controller
+    await previousCameraController?.dispose();
+
+    // Replace with the new controller
+    if (mounted) {
+      print("Mounted = true, now setting controller value");
+      setState(() {
+        controller = cameraController;
+      });
+    }
+
+    // Update UI if controller updated
+    cameraController.addListener(() {
+      if (mounted) setState(() {});
+    });
+
+    // Initialize controller
+    try {
+      await cameraController.initialize();
+    } on CameraException catch (e) {
+      print('Error initializing camera: $e');
+    }
+
+    // Update the Boolean
+    if (mounted) {
+      setState(() {
+        _isCameraInitialized = controller!.value.isInitialized;
+      });
+    }
+  }
+
+  @override
   void initState() {
-    super.initState();
-    initializeCamera(selectedCamera);
     WidgetsBinding.instance!.addObserver(this);
+    // Hide the status bar in Android
+    //SystemChrome.setEnabledSystemUIOverlays([]);
+    //getPermissionStatus();
+    onNewCameraSelected(cameras![0]);
+    super.initState();
   }
 
   @override
   void dispose() {
-    // Dispose of the controller when the widget is disposed.
-    controller.dispose();
+    WidgetsBinding.instance!.removeObserver(this);
+    controller?.dispose();
     super.dispose();
-  }
-
-  initializeCamera(int cameraIndex) async {
-    controller = CameraController(
-      // Get a specific camera from the list of available cameras.
-      cameras![cameraIndex],
-      // Define the resolution to use.
-      ResolutionPreset.high
-    );
-
-    // Next, initialize the controller. This returns a Future.
-    _initializeControllerFuture = controller.initialize();
   }
 
   @override
   Widget build(BuildContext context) {
-    //if (!_isReady) return new Container();
     return Scaffold(
-      // Wait until the controller is initialized before displaying the
-      // camera preview. Use a FutureBuilder to display a loading spinner
-      // until the controller has finished initializing.
-      body: FutureBuilder<void>(
-        future: _initializeControllerFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.done) {
-            // If the Future is complete, display the preview.
-            return CameraPreview(controller);
-          } else {
-            // Otherwise, display a loading indicator.
-            return const Center(child: CircularProgressIndicator());
-          }
-        },
-      ),
+      body: _isCameraInitialized ? CameraPreview(controller!) : Center(child: CircularProgressIndicator())
+      ,
       persistentFooterButtons:
           getFooterButtons("Flytt deg!", _takePicture, context),
     );
@@ -84,8 +121,6 @@ class TakePictureScreenState extends State<TakePictureScreen>
       String savedPath;
       if (cameras != null) {
         // Ensure that the camera is initialized.
-        await _initializeControllerFuture;
-
         try {
           // Attempt to take a picture and log where it's been saved.
           XFile picture = await controller!.takePicture();
@@ -95,7 +130,7 @@ class TakePictureScreenState extends State<TakePictureScreen>
           return;
         }
 
-        controller.pausePreview();
+//        controller.pausePreview();
       } else {
         savedPath = "";
       }
