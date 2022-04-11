@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flyttdeg/persistent_buttons.dart';
@@ -107,7 +105,12 @@ class TakePictureScreenState extends State<TakePictureScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _isCameraInitialized ? CameraPreview(controller!) : Center(child: CircularProgressIndicator())
+      body: _isCameraInitialized ?
+      Container(
+          width: double.infinity,
+          height: double.infinity,
+          child: CameraPreview(controller!))
+      : Center(child: CircularProgressIndicator())
       ,
       persistentFooterButtons:
           getFooterButtons("Flytt deg!", _takePicture, context),
