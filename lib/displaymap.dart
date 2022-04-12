@@ -134,7 +134,7 @@ class DisplayMapScreenState extends State<DisplayMapScreen> {
   }
 
   void _savePosition() async {
-    Navigator.push(
+    Navigator.pushReplacement(
       context,
       MaterialPageRoute(
         builder: (context) => DescriptionScreen(

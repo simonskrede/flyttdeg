@@ -138,7 +138,7 @@ class TakePictureScreenState extends State<TakePictureScreen>
         savedPath = "";
       }
 
-      Navigator.push(
+      Navigator.pushReplacement(
         context,
         MaterialPageRoute(
           builder: (context) => DisplayMapScreen(imagePath: savedPath),

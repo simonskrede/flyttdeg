@@ -127,13 +127,18 @@ class DescriptionScreenState extends State<DescriptionScreen> {
       "file": file,
     });
 
+    BaseOptions options = new BaseOptions(
+        connectTimeout: 60*1000,
+        receiveTimeout: 60*1000
+    );
+
     try {
-      await new Dio().post("https://flyttdeg.no/flyttdeg", data: formData);
+      await new Dio(options).post("https://flyttdeg.no/flyttdeg", data: formData, );
     } on DioError catch (e) {
       await _showMyDialog(
           'Noe gikk galt, flytting er tilsynelatende vanskelig i dag :-|');
 
-      Navigator.push(
+      Navigator.pushReplacement(
         context,
         MaterialPageRoute(
           builder: (context) => TakePictureScreen(),
@@ -150,7 +155,7 @@ class DescriptionScreenState extends State<DescriptionScreen> {
       }
     }
 
-    Navigator.push(
+    Navigator.pushReplacement(
       context,
       MaterialPageRoute(
         builder: (context) => ThanksScreen(),

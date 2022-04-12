@@ -30,7 +30,7 @@ class ThanksScreenState extends State<ThanksScreen> {
   }
 
   void _flyttMer() {
-    Navigator.push(
+    Navigator.pushReplacement(
       context,
       MaterialPageRoute(
         builder: (context) => TakePictureScreen(),
