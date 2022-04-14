@@ -49,10 +49,8 @@ class TakePictureScreenState extends State<TakePictureScreen>
     final previousCameraController = controller;
     // Instantiating the camera controller
     final CameraController cameraController = CameraController(
-      cameraDescription,
-      ResolutionPreset.high,
-      imageFormatGroup: ImageFormatGroup.jpeg,
-    );
+        cameraDescription, ResolutionPreset.high,
+        imageFormatGroup: ImageFormatGroup.jpeg, enableAudio: false);
 
     // Dispose the previous controller
     await previousCameraController?.dispose();
@@ -105,13 +103,12 @@ class TakePictureScreenState extends State<TakePictureScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _isCameraInitialized ?
-      Container(
-          width: double.infinity,
-          height: double.infinity,
-          child: CameraPreview(controller!))
-      : Center(child: CircularProgressIndicator())
-      ,
+      body: _isCameraInitialized
+          ? Container(
+              width: double.infinity,
+              height: double.infinity,
+              child: CameraPreview(controller!))
+          : Center(child: CircularProgressIndicator()),
       persistentFooterButtons:
           getFooterButtons("Flytt deg!", _takePicture, context),
     );
