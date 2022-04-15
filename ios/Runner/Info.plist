@@ -47,5 +47,7 @@
 	<false/>
 	<key>io.flutter.embedded_views_preview</key>
 	<string>YES</string>
+	<key>CFBundleIconName</key>
+  <string>AppIcons</string>
 </dict>
 </plist>
