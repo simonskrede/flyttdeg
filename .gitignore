@@ -46,3 +46,4 @@ ios/build/XCBuildData/
 ios/build/Runner.build/
 ios/build/SharedPrecompiledHeaders/
 ios/build/Debug-iphonesimulator/
+/android/key.properties
