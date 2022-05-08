@@ -89,7 +89,9 @@ class TakePictureScreenState extends State<TakePictureScreen>
     // Hide the status bar in Android
     //SystemChrome.setEnabledSystemUIOverlays([]);
     //getPermissionStatus();
-    onNewCameraSelected(cameras![0]);
+    if (cameras != null && cameras!.isNotEmpty) {
+      onNewCameraSelected(cameras![0]);
+    }
     super.initState();
   }
 
@@ -119,7 +121,7 @@ class TakePictureScreenState extends State<TakePictureScreen>
     // catch the error.
     try {
       String savedPath;
-      if (cameras != null) {
+      if (cameras != null && cameras!.isNotEmpty) {
         // Ensure that the camera is initialized.
         try {
           // Attempt to take a picture and log where it's been saved.
