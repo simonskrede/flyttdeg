@@ -22,17 +22,41 @@ Future<void> main() async {
     Permission.locationWhenInUse,
   ].request();
 
-  cameras = await availableCameras();
+  bool grantedAll = true;
+  if (await Permission.camera.isGranted) {
+    cameras = await availableCameras();
+  } else {
+    grantedAll = false;
+  }
 
-  runApp(
-    PlatformApp(
+  if (await Permission.locationWhenInUse.isDenied) {
+    grantedAll = false;
+  }
+
+  runApp(PlatformApp(
       localizationsDelegates: [
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      supportedLocales: [Locale('no', '')],
-      home: TakePictureScreen(),
-    ),
-  );
+      supportedLocales: [
+        Locale('no', '')
+      ],
+      home: grantedAll
+          ? TakePictureScreen()
+          : Scaffold(
+              body: Center(
+                  child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                    Text(
+                        "Flyttdeg trenger tilgang til kamera og posisjon - skru dem på i innstillingene og start appen på nytt for å bruke den.",
+                        textAlign: TextAlign.center,
+                        textScaleFactor: 2)
+                  ])),
+              persistentFooterButtons: [
+                  TextButton(
+                      child: Text("Åpne innstillinger"),
+                      onPressed: () => openAppSettings())
+                ])));
 }

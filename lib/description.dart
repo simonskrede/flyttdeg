@@ -93,7 +93,7 @@ class DescriptionScreenState extends State<DescriptionScreen> {
             ),
           ),
           actions: <Widget>[
-            PlatformButton(
+            PlatformTextButton(
               child: Text('Sukk, ok'),
               onPressed: () {
                 Navigator.of(context).pop();
@@ -127,14 +127,15 @@ class DescriptionScreenState extends State<DescriptionScreen> {
       "file": file,
     });
 
-    BaseOptions options = new BaseOptions(
-        connectTimeout: 60*1000,
-        receiveTimeout: 60*1000
-    );
+    BaseOptions options =
+        new BaseOptions(connectTimeout: 60 * 1000, receiveTimeout: 60 * 1000);
 
     try {
-      await new Dio(options).post("https://flyttdeg.no/flyttdeg", data: formData, );
-    } on DioError catch (e) {
+      await new Dio(options).post(
+        "https://flyttdeg.no/flyttdeg",
+        data: formData,
+      );
+    } on DioError {
       await _showMyDialog(
           'Noe gikk galt, flytting er tilsynelatende vanskelig i dag :-|');
 
@@ -151,8 +152,7 @@ class DescriptionScreenState extends State<DescriptionScreen> {
         if (await _deleteFile.exists()) {
           await _deleteFile.delete();
         }
-      } catch (e) {
-      }
+      } catch (e) {}
     }
 
     Navigator.pushReplacement(

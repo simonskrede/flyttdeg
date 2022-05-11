@@ -23,9 +23,9 @@
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSCameraUsageDescription</key>
-	<string>To take pictures of malparked cars..</string>
+	<string>For å ta bilde av feilparkerte kjøretøy</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>For sending info om hvor den feilparkerte bilen står.</string>
+	<string>For enkelt å beskrive hvor den feilparkerte bilen står</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>

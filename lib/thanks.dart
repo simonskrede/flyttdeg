@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flyttdeg/persistent_buttons.dart';
 import 'package:flyttdeg/takepicture.dart';
 
