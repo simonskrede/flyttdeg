@@ -49,5 +49,7 @@
 	<string>YES</string>
 	<key>CFBundleIconName</key>
   <string>AppIcons</string>
+	<key>CADisableMinimumFrameDurationOnPhone</key>
+	<true/>
 </dict>
 </plist>
