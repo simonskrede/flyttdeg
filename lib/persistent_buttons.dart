@@ -2,6 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 
+import 'globals.dart';
+
 getFooterButtons(String text, Function() takePicture, BuildContext context) {
   return [
     PlatformIconButton(
@@ -30,7 +32,8 @@ showAlertDialog(BuildContext context) {
         '1. Ta et bilde som beskriver situasjonen på en god måte.\n\n'
         '2. Merk så nøyaktig du kan i kartet hvor feilparkeringen har skjedd.\n\n'
         '3. Skriv en kort tekst som beskriver situasjonen.\n\n'
-        '4. Send inn og besøk gjerne nettsiden flyttdeg.no for mer informasjon og kule verktøy :-)'),
+        '4. Send inn og besøk gjerne nettsiden flyttdeg.no for mer informasjon og kule verktøy :-)\n\n'
+            'Din region: ${region?.capitalize()}'),
     actions: [okButton],
   );
 

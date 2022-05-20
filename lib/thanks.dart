@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flyttdeg/persistent_buttons.dart';
 import 'package:flyttdeg/takepicture.dart';
+import 'package:flyttdeg/globals.dart';
 
 class ThanksScreen extends StatefulWidget {
   const ThanksScreen({
@@ -20,7 +21,7 @@ class ThanksScreenState extends State<ThanksScreen> {
       // until the controller has finished initializing.
       body: Center(
           child: Text(
-              'Takk, nå er det Bymiljøetaten som forhåpentligvis sørger for flytting!',
+              'Takk! Rapporten din vil bli vurdert av maskiner og mennesker før eventuell videresending til ${region!.capitalize()} kommune, som forhåpentligvis sørger for flytting!',
               textAlign: TextAlign.center,
               textScaleFactor: 2)),
       persistentFooterButtons:

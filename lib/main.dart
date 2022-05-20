@@ -34,8 +34,6 @@ Future<void> main() async {
     grantedAll = false;
   }
 
-  String? region;
-
   if(grantedAll) {
     try {
       final position = await Geolocator.getCurrentPosition();
@@ -53,7 +51,6 @@ Future<void> main() async {
       if (region == "null") {
         region = null;
       }
-      print(region);
     } on DioError {
       region = null;
     }
