@@ -34,25 +34,25 @@ Future<void> main() async {
     grantedAll = false;
   }
 
-  if(grantedAll) {
+  if (grantedAll) {
     try {
       final position = await Geolocator.getCurrentPosition();
 
       String url =
-          "https://flyttdeg.no/location?latitude=${position
-          .latitude}&longitude=${position.longitude}";
+          "https://flyttdeg.no/location?latitude=${position.latitude}&longitude=${position.longitude}";
 
-      final response = await new Dio().get(
-        url,
-      );
+      Dio dio = new Dio();
+      dio.options.connectTimeout = 5000;
+
+      final response = await dio.get(url);
 
       Map responseData = response.data;
       region = responseData["region"];
       if (region == "null") {
         region = null;
       }
-    } on DioError {
-      region = null;
+    } on DioError catch (e) {
+      region = "OSLO";
     }
   }
 

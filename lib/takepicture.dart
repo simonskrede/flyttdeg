@@ -85,7 +85,7 @@ class TakePictureScreenState extends State<TakePictureScreen>
 
   @override
   void initState() {
-    WidgetsBinding.instance!.addObserver(this);
+    WidgetsBinding.instance.addObserver(this);
     // Hide the status bar in Android
     //SystemChrome.setEnabledSystemUIOverlays([]);
     //getPermissionStatus();
@@ -97,7 +97,7 @@ class TakePictureScreenState extends State<TakePictureScreen>
 
   @override
   void dispose() {
-    WidgetsBinding.instance!.removeObserver(this);
+    WidgetsBinding.instance.removeObserver(this);
     controller?.dispose();
     super.dispose();
   }
