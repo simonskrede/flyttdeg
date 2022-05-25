@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flyttdeg/persistent_buttons.dart';
+import 'package:flyttdeg/quickdescribe.dart';
 import 'package:flyttdeg/takepicture.dart';
 import 'package:flyttdeg/thanks.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -25,11 +26,14 @@ class DescriptionScreen extends StatefulWidget {
   DescriptionScreenState createState() => DescriptionScreenState();
 }
 
+TextEditingController textEditingController = TextEditingController();
+
 PlatformTextField textField = new PlatformTextField(
   autofocus: true,
   maxLines: 40,
   style: const TextStyle(color: Colors.black, fontSize: 20.0),
   onChanged: changedText,
+  controller: textEditingController,
   material: (_, __) => MaterialTextFieldData(
       decoration: new InputDecoration(
     border: InputBorder.none,
@@ -60,7 +64,18 @@ Widget bodySection = new Expanded(
   ),
 );
 
+
 class DescriptionScreenState extends State<DescriptionScreen> {
+
+  late QuickDescribe quickDescribe;
+
+  @override
+  void initState() {
+    super.initState();
+    textEditingController.text = "";
+    quickDescribe = QuickDescribe(controller: textEditingController);
+  }
+
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
@@ -71,6 +86,7 @@ class DescriptionScreenState extends State<DescriptionScreen> {
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             bodySection,
+            quickDescribe,
             ButtonBar(
                 children:
                     getFooterButtons("Flytt deg!!!", _transmitInfo, context)),
