@@ -32,7 +32,6 @@ PlatformTextField textField = new PlatformTextField(
   autofocus: true,
   maxLines: 40,
   style: const TextStyle(color: Colors.black, fontSize: 20.0),
-  onChanged: changedText,
   controller: textEditingController,
   material: (_, __) => MaterialTextFieldData(
       decoration: new InputDecoration(
@@ -139,7 +138,7 @@ class DescriptionScreenState extends State<DescriptionScreen> {
           "," +
           widget.position!.longitude.toString(),
       "zoom": widget.zoom.toString(),
-      "description": lastTextValue,
+      "description": textEditingController.value.text,
       "file": file,
     });
 
@@ -178,10 +177,4 @@ class DescriptionScreenState extends State<DescriptionScreen> {
       ),
     );
   }
-}
-
-var lastTextValue = "";
-
-void changedText(String value) {
-  lastTextValue = value;
 }
