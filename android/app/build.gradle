@@ -31,6 +31,8 @@ if (keystorePropertiesFile.exists()) {
 android {
     compileSdkVersion 33
 
+    //namespace 'no.flyttdeg.flyttdeg'
+
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
     }
@@ -42,24 +44,10 @@ android {
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId "no.flyttdeg.flyttdeg"
-        minSdkVersion 28
-        targetSdkVersion 30
+        minSdkVersion 31
+        targetSdkVersion 33
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
-    }
-
-    signingConfigs {
-        release {
-            keyAlias keystoreProperties['keyAlias']
-            keyPassword keystoreProperties['keyPassword']
-            storeFile keystoreProperties['storeFile'] ? file(keystoreProperties['storeFile']) : null
-            storePassword keystoreProperties['storePassword']
-        }
-    }
-    buildTypes {
-        release {
-            signingConfig signingConfigs.release
-        }
     }
 
     signingConfigs {

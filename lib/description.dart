@@ -143,7 +143,7 @@ class DescriptionScreenState extends State<DescriptionScreen> {
     });
 
     BaseOptions options =
-        new BaseOptions(connectTimeout: 60 * 1000, receiveTimeout: 60 * 1000);
+        new BaseOptions(connectTimeout: Duration(seconds: 60), receiveTimeout: Duration(seconds: 60));
 
     try {
       await new Dio(options).post(

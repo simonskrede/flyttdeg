@@ -43,7 +43,7 @@ Future<void> main() async {
           "https://flyttdeg.no/location?latitude=${position.latitude}&longitude=${position.longitude}";
 
       Dio dio = new Dio();
-      dio.options.connectTimeout = 5000;
+      dio.options.connectTimeout = Duration(seconds: 5);
 
       final response = await dio.get(url);
 
