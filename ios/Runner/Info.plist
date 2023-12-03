@@ -26,6 +26,8 @@
 	<string>For å ta bilde av feilparkerte kjøretøy</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>For enkelt å beskrive hvor den feilparkerte bilen står</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>For enkelt å beskrive hvor den feilparkerte bilen står</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
