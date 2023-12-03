@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:camera/camera.dart';
 import 'package:dio/dio.dart';
@@ -6,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:google_maps_flutter_android/google_maps_flutter_android.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 
@@ -55,6 +57,10 @@ Future<void> main() async {
     } on DioError catch (e) {
       region = "OSLO";
     }
+  }
+
+  if (Platform.isAndroid) {
+    await GoogleMapsFlutterAndroid().initializeWithRenderer(AndroidMapRenderer.latest);
   }
 
   await SentryFlutter.init((options) {
