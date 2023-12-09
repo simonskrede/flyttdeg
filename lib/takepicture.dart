@@ -1,5 +1,6 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flyttdeg/persistent_buttons.dart';
 
 import 'displaymap.dart';
@@ -92,6 +93,13 @@ class TakePictureScreenState extends State<TakePictureScreen>
     if (cameras != null && cameras!.isNotEmpty) {
       onNewCameraSelected(cameras![0]);
     }
+
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      if(region == "UNKNOWN") {
+        showTestAlertDialog();
+      }
+    });
+
     super.initState();
   }
 
@@ -148,5 +156,29 @@ class TakePictureScreenState extends State<TakePictureScreen>
       // If an error occurs, log the error to the console.
       print(e);
     }
+  }
+
+  void showTestAlertDialog() async {
+    Widget okButton = TextButton(
+      child: Text("Ok"),
+      onPressed: () => Navigator.pop(context),
+    );
+
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: Text("Ikke støttet posisjon"),
+      content: Scrollbar(thumbVisibility: true, child: SingleChildScrollView(child: Text(
+          "Flytt deg er ikke tilgjengelig for din posisjon.\nTa gjerne kontakt med flyttdeg@flyttdeg.no om du ønsker å bidra til å utvide støtten til ditt område.\nDu kan likevel teste Flytt deg, men din melding vil ikke bli lagret eller videresendt."
+      ))),
+      actions: [okButton],
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
   }
 }

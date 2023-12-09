@@ -54,13 +54,14 @@ Future<void> main() async {
       if (region == "null") {
         region = null;
       }
-    } on DioError catch (e) {
-      region = "OSLO";
+    } on DioException catch (e) {
+      region = null;
     }
   }
 
   if (Platform.isAndroid) {
-    await GoogleMapsFlutterAndroid().initializeWithRenderer(AndroidMapRenderer.latest);
+    await GoogleMapsFlutterAndroid()
+        .initializeWithRenderer(AndroidMapRenderer.latest);
   }
 
   await SentryFlutter.init((options) {
@@ -76,7 +77,7 @@ Future<void> main() async {
               supportedLocales: [
                 Locale('no', '')
               ],
-              home: grantedAll && region != null
+              home: grantedAll
                   ? TakePictureScreen()
                   : Scaffold(
                       body: Center(
@@ -84,9 +85,7 @@ Future<void> main() async {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                             Text(
-                                !grantedAll
-                                    ? "Flyttdeg trenger tilgang til kamera og posisjon - skru dem på i innstillingene og start appen på nytt for å bruke den."
-                                    : "Flytt deg er ikke tilgjengelig for din posisjon. Ta gjerne kontakt med flyttdeg@flyttdeg.no om du ønsker å bidra til å utvide støtten til ditt område.",
+                                "Flyttdeg trenger tilgang til kamera og posisjon - skru dem på i innstillingene og start appen på nytt for å bruke den.",
                                 textAlign: TextAlign.center,
                                 textScaleFactor: 2)
                           ])),
