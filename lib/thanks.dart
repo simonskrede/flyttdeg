@@ -16,25 +16,33 @@ class ThanksScreenState extends State<ThanksScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // Wait until the controller is initialized before displaying the
-      // camera preview. Use a FutureBuilder to display a loading spinner
-      // until the controller has finished initializing.
-      body: Center(
+      appBar: AppBar(
+        title: const Text("Takk"),
+        backgroundColor: Colors.black,
+        automaticallyImplyLeading: false,
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(24.0),
+        child: Center(
           child: Text(
-              'Takk! Rapporten din vil bli vurdert av maskiner og mennesker før eventuell videresending til ${region!.capitalize()} kommune, som forhåpentligvis sørger for flytting!',
-              textAlign: TextAlign.center,
-              textScaleFactor: 2)),
+            'Takk! Rapporten din vil bli vurdert før eventuell videresending til ${region?.capitalize() ?? "din"} kommune, som forhåpentligvis sørger for flytting!',
+            textAlign: TextAlign.center,
+            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+          ),
+        ),
+      ),
       persistentFooterButtons:
           getFooterButtons("Mer flytting?", _flyttMer, context),
     );
   }
 
   void _flyttMer() {
-    Navigator.pushReplacement(
+    Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(
-        builder: (context) => TakePictureScreen(),
+        builder: (context) => const TakePictureScreen(),
       ),
+      (route) => false,
     );
   }
 }

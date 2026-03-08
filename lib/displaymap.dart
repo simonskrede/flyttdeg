@@ -20,64 +20,30 @@ class DisplayMapScreen extends StatefulWidget {
 }
 
 class DisplayMapScreenState extends State<DisplayMapScreen> {
-  Completer<GoogleMapController>? controller;
+  final Completer<GoogleMapController> _controller = Completer();
 
-  Geolocator geolocator = Geolocator();
-
-  static LatLng? _initialPosition = new LatLng(59.9062988, 10.7878025);
-  static LatLng? _lastMapPosition = _initialPosition;
-  static double _initialZoom = 18;
-  static double _lastZoom = _initialZoom;
+  LatLng? _initialPosition;
+  LatLng? _lastMapPosition;
+  double _lastZoom = 18;
 
   @override
   void initState() {
     super.initState();
-    _initialPosition = null;
-    print("established geolocator");
-
     _determinePosition();
   }
 
-  void _determinePosition() async {
-    bool serviceEnabled;
-    LocationPermission permission;
-
-    // Test if location services are enabled.
-    serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      // Location services are not enabled don't continue
-      // accessing the position and request users of the
-      // App to enable the location services.
-      return Future.error('Location services are disabled.');
-    }
-
-    permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
-        // Permissions are denied, next time you could try
-        // requesting permissions again (this is also where
-        // Android's shouldShowRequestPermissionRationale
-        // returned true. According to Android guidelines
-        // your App should show an explanatory UI now.
-        return Future.error('Location permissions are denied');
+  Future<void> _determinePosition() async {
+    try {
+      final position = await Geolocator.getCurrentPosition();
+      if (mounted) {
+        setState(() {
+          _initialPosition = LatLng(position.latitude, position.longitude);
+          _lastMapPosition = _initialPosition;
+        });
       }
+    } catch (e) {
+      print("Error determining position: $e");
     }
-
-    if (permission == LocationPermission.deniedForever) {
-      // Permissions are denied forever, handle appropriately.
-      return Future.error(
-          'Location permissions are permanently denied, we cannot request permissions.');
-    }
-
-    // When we reach here, permissions are granted and we can
-    // continue accessing the position of the device.
-    final position = await Geolocator.getCurrentPosition();
-
-    print("done getting location");
-    setState(() {
-      _initialPosition = LatLng(position.latitude, position.longitude);
-    });
   }
 
   @override
@@ -87,30 +53,25 @@ class DisplayMapScreenState extends State<DisplayMapScreen> {
     double iconSize = 40.0;
 
     return Scaffold(
+      appBar: AppBar(
+        title: const Text("Hvor skjedde det?"),
+        backgroundColor: Colors.black,
+      ),
       body: _initialPosition == null
-          ? Container(
-              child: Center(
-                child: Text(
-                  'Laster kart ...',
-                  style: TextStyle(
-                      fontFamily: 'Avenir-Medium', color: Colors.grey[400]),
-                ),
-              ),
+          ? const Center(
+              child: CircularProgressIndicator(),
             )
-          : Container(
-              child: Stack(alignment: Alignment(0.0, 0.0), children: <Widget>[
+          : Stack(
+              alignment: Alignment.center,
+              children: <Widget>[
                 GoogleMap(
                   mapType: MapType.normal,
                   initialCameraPosition: CameraPosition(
                     target: _initialPosition!,
-                    zoom: _initialZoom,
+                    zoom: 18,
                   ),
-                  onMapCreated: (GoogleMapController _controller) {
-                    setState(() {
-                      if (controller != null) {
-                        controller!.complete(_controller);
-                      }
-                    });
+                  onMapCreated: (GoogleMapController controller) {
+                    _controller.complete(controller);
                   },
                   zoomGesturesEnabled: true,
                   onCameraMove: (CameraPosition position) {
@@ -119,22 +80,21 @@ class DisplayMapScreenState extends State<DisplayMapScreen> {
                   },
                   myLocationEnabled: true,
                   compassEnabled: true,
-                  myLocationButtonEnabled: false,
+                  myLocationButtonEnabled: true,
                 ),
-                new Positioned(
-                  top: (mapHeight - iconSize) / 2,
-                  right: (mapWidth - iconSize) / 2,
-                  child: new Icon(Icons.person_pin_circle, size: iconSize),
+                Positioned(
+                  top: (mapHeight - iconSize) / 2 - 40, // Adjust for AppBar
+                  child: Icon(Icons.person_pin_circle, size: iconSize, color: Colors.red),
                 )
-              ]),
+              ],
             ),
       persistentFooterButtons:
-          getFooterButtons("Flytt deg!!", _savePosition, context),
+          getFooterButtons("Flytt deg!", _savePosition, context),
     );
   }
 
-  void _savePosition() async {
-    Navigator.pushReplacement(
+  void _savePosition() {
+    Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => DescriptionScreen(

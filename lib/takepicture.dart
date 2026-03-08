@@ -6,11 +6,8 @@ import 'package:flyttdeg/persistent_buttons.dart';
 import 'displaymap.dart';
 import 'globals.dart';
 
-// A screen that allows users to take a picture using a given camera.
 class TakePictureScreen extends StatefulWidget {
-  const TakePictureScreen({
-    Key? key,
-  }) : super(key: key);
+  const TakePictureScreen({Key? key}) : super(key: key);
 
   @override
   TakePictureScreenState createState() => TakePictureScreenState();
@@ -19,88 +16,74 @@ class TakePictureScreen extends StatefulWidget {
 class TakePictureScreenState extends State<TakePictureScreen>
     with WidgetsBindingObserver {
   CameraController? controller;
-
   bool _isCameraInitialized = false;
-
-  int selectedCamera = 0;
+  bool _isTakingPicture = false;
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    print("didChangeAppLifecycleState: " + state.toString());
     final CameraController? cameraController = controller;
 
-    // App state changed before we got the chance to initialize.
     if (cameraController == null || !cameraController.value.isInitialized) {
       return;
     }
 
-    print("didChangeAppLifecycleState got past nullcheck");
-
     if (state == AppLifecycleState.inactive) {
-      // Free up memory when camera not active
       cameraController.dispose();
+      if (mounted) {
+        setState(() {
+          _isCameraInitialized = false;
+        });
+      }
     } else if (state == AppLifecycleState.resumed) {
-      // Reinitialize the camera with same properties
       onNewCameraSelected(cameraController.description);
     }
   }
 
   void onNewCameraSelected(CameraDescription cameraDescription) async {
-    print("Inside onNewCameraSelected");
     final previousCameraController = controller;
-    // Instantiating the camera controller
+    
     final CameraController cameraController = CameraController(
-        cameraDescription, ResolutionPreset.high,
-        imageFormatGroup: ImageFormatGroup.jpeg, enableAudio: false);
+      cameraDescription,
+      ResolutionPreset.high,
+      imageFormatGroup: ImageFormatGroup.jpeg,
+      enableAudio: false,
+    );
 
-    // Dispose the previous controller
     await previousCameraController?.dispose();
 
-    // Replace with the new controller
     if (mounted) {
-      print("Mounted = true, now setting controller value");
       setState(() {
         controller = cameraController;
+        _isCameraInitialized = false;
       });
     }
 
-    // Update UI if controller updated
-    cameraController.addListener(() {
-      if (mounted) setState(() {});
-    });
-
-    // Initialize controller
     try {
       await cameraController.initialize();
+      if (mounted) {
+        setState(() {
+          _isCameraInitialized = controller!.value.isInitialized;
+        });
+      }
     } on CameraException catch (e) {
       print('Error initializing camera: $e');
-    }
-
-    // Update the Boolean
-    if (mounted) {
-      setState(() {
-        _isCameraInitialized = controller!.value.isInitialized;
-      });
     }
   }
 
   @override
   void initState() {
+    super.initState();
     WidgetsBinding.instance.addObserver(this);
-    // Hide the status bar in Android
-    //SystemChrome.setEnabledSystemUIOverlays([]);
-    //getPermissionStatus();
+    
     if (cameras != null && cameras!.isNotEmpty) {
       onNewCameraSelected(cameras![0]);
     }
 
     SchedulerBinding.instance.addPostFrameCallback((_) {
-      if(region == "UNKNOWN") {
+      if (region == null) {
         showTestAlertDialog();
       }
     });
-
-    super.initState();
   }
 
   @override
@@ -114,66 +97,69 @@ class TakePictureScreenState extends State<TakePictureScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       body: _isCameraInitialized
-          ? Container(
-              width: double.infinity,
-              height: double.infinity,
-              child: CameraPreview(controller!))
-          : Center(child: CircularProgressIndicator()),
+          ? Stack(
+              children: [
+                SizedBox.expand(child: CameraPreview(controller!)),
+                if (_isTakingPicture)
+                  const Center(child: CircularProgressIndicator()),
+              ],
+            )
+          : const Center(child: CircularProgressIndicator()),
       persistentFooterButtons:
-          getFooterButtons("Flytt deg!", _takePicture, context),
+          getFooterButtons("Flytt deg!", _isTakingPicture ? null : _takePicture, context),
     );
   }
 
-  _takePicture() async {
-    // Take the PathPicture in a try / catch block. If anything goes wrong,
-    // catch the error.
+  Future<void> _takePicture() async {
+    if (controller == null || !controller!.value.isInitialized || _isTakingPicture) {
+      return;
+    }
+
+    setState(() {
+      _isTakingPicture = true;
+    });
+
     try {
-      String savedPath;
-      if (cameras != null && cameras!.isNotEmpty) {
-        // Ensure that the camera is initialized.
-        try {
-          // Attempt to take a picture and log where it's been saved.
-          XFile picture = await controller!.takePicture();
-          savedPath = picture.path;
-        } catch (ex) {
-          //Restart.restartApp();
-          return;
-        }
+      XFile picture = await controller!.takePicture();
+      
+      if (!mounted) return;
 
-//        controller.pausePreview();
-      } else {
-        savedPath = "";
-      }
-
-      Navigator.pushReplacement(
+      await Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => DisplayMapScreen(imagePath: savedPath),
+          builder: (context) => DisplayMapScreen(imagePath: picture.path),
         ),
       );
-      // If the picture was taken, display it on a new screen.
     } catch (e) {
-      // If an error occurs, log the error to the console.
-      print(e);
+      print("Error taking picture: $e");
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isTakingPicture = false;
+        });
+      }
     }
   }
 
   void showTestAlertDialog() async {
     Widget okButton = TextButton(
-      child: Text("Ok"),
+      child: const Text("Ok"),
       onPressed: () => Navigator.pop(context),
     );
 
-    // set up the AlertDialog
     AlertDialog alert = AlertDialog(
-      title: Text("Ikke støttet posisjon"),
-      content: Scrollbar(thumbVisibility: true, child: SingleChildScrollView(child: Text(
-          "Flytt deg er ikke tilgjengelig for din posisjon.\nTa gjerne kontakt med flyttdeg@flyttdeg.no om du ønsker å bidra til å utvide støtten til ditt område.\nDu kan likevel teste Flytt deg, men din melding vil ikke bli lagret eller videresendt."
-      ))),
+      title: const Text("Ikke støttet posisjon"),
+      content: const Scrollbar(
+        thumbVisibility: true,
+        child: SingleChildScrollView(
+          child: Text(
+            "Flytt deg er ikke tilgjengelig for din posisjon.\nTa gjerne kontakt med flyttdeg@flyttdeg.no om du ønsker å bidra til å utvide støtten til ditt område.\nDu kan likevel teste Flytt deg, men din melding vil ikke bli lagret eller videresendt.",
+          ),
+        ),
+      ),
       actions: [okButton],
     );
 
-    // show the dialog
     showDialog(
       context: context,
       builder: (BuildContext context) {

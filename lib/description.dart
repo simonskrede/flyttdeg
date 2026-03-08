@@ -6,7 +6,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flyttdeg/persistent_buttons.dart';
 import 'package:flyttdeg/quickdescribe.dart';
-import 'package:flyttdeg/takepicture.dart';
 import 'package:flyttdeg/thanks.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
@@ -15,93 +14,96 @@ class DescriptionScreen extends StatefulWidget {
   final LatLng? position;
   final double zoom;
 
-  const DescriptionScreen(
-      {Key? key,
-      required this.imagePath,
-      required this.position,
-      required this.zoom})
-      : super(key: key);
+  const DescriptionScreen({
+    Key? key,
+    required this.imagePath,
+    required this.position,
+    required this.zoom,
+  }) : super(key: key);
 
   @override
   DescriptionScreenState createState() => DescriptionScreenState();
 }
 
-TextEditingController textEditingController = TextEditingController();
-
-PlatformTextField textField = new PlatformTextField(
-  autofocus: true,
-  maxLines: 40,
-  style: const TextStyle(color: Colors.black, fontSize: 20.0),
-  controller: textEditingController,
-  material: (_, __) => MaterialTextFieldData(
-      decoration: new InputDecoration(
-    border: InputBorder.none,
-    hintText: "Beskriv hvorfor denne bør flytte seg ...",
-    hintStyle: const TextStyle(color: Color(0xFF666666), fontSize: 20.0),
-    contentPadding:
-        const EdgeInsets.only(top: 40.0, right: 40.0, bottom: 40.0, left: 40.0),
-  )),
-  cupertino: (_, __) => CupertinoTextFieldData(
-      style: const TextStyle(color: Colors.black, fontSize: 20.0),
-      placeholder: "Beskriv hvorfor denne bør flytte seg ...",
-      placeholderStyle:
-          const TextStyle(color: Color(0xFF666666), fontSize: 20.0),
-      decoration: new BoxDecoration(
-        border: Border.all(
-          color: Colors.white,
-          width: 12,
-        ),
-        borderRadius: BorderRadius.circular(8),
-      )),
-);
-
-Widget bodySection = new Expanded(
-  child: new Container(
-    padding: new EdgeInsets.all(8.0),
-    color: Color(0xFFeeeeee),
-    child: textField,
-  ),
-);
-
-
 class DescriptionScreenState extends State<DescriptionScreen> {
-
-  late QuickDescribe quickDescribe;
+  final TextEditingController _textEditingController = TextEditingController();
+  late QuickDescribe _quickDescribe;
+  bool _isSending = false;
 
   @override
   void initState() {
     super.initState();
-    textEditingController.text = "";
-    quickDescribe = QuickDescribe(controller: textEditingController);
+    _quickDescribe = QuickDescribe(controller: _textEditingController);
+  }
+
+  @override
+  void dispose() {
+    _textEditingController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-      body: new SafeArea(
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Beskrivelse"),
+        backgroundColor: Colors.black,
+      ),
+      body: SafeArea(
         child: Column(
-          // This makes each child fill the full width of the screen
           crossAxisAlignment: CrossAxisAlignment.stretch,
-          mainAxisSize: MainAxisSize.min,
           children: <Widget>[
-            bodySection,
-            quickDescribe,
+            Expanded(
+              child: Container(
+                padding: const EdgeInsets.all(8.0),
+                color: const Color(0xFFeeeeee),
+                child: PlatformTextField(
+                  autofocus: true,
+                  maxLines: 40,
+                  style: const TextStyle(color: Colors.black, fontSize: 20.0),
+                  controller: _textEditingController,
+                  material: (_, __) => MaterialTextFieldData(
+                    decoration: const InputDecoration(
+                      border: InputBorder.none,
+                      hintText: "Beskriv hvorfor denne bør flytte seg ...",
+                      hintStyle: TextStyle(color: Color(0xFF666666), fontSize: 20.0),
+                      contentPadding: EdgeInsets.all(40.0),
+                    ),
+                  ),
+                  cupertino: (_, __) => CupertinoTextFieldData(
+                    placeholder: "Beskriv hvorfor denne bør flytte seg ...",
+                    placeholderStyle: const TextStyle(color: Color(0xFF666666), fontSize: 20.0),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.white, width: 12),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            _quickDescribe,
+            if (_isSending)
+              const LinearProgressIndicator(),
             ButtonBar(
-                children:
-                    getFooterButtons("Flytt deg!!!", _transmitInfo, context)),
+              children: getFooterButtons(
+                "Flytt deg!!!",
+                _isSending ? null : _transmitInfo,
+                context,
+              ),
+            ),
           ],
         ),
       ),
     );
   }
 
-  Future<void> _showMyDialog(String message) {
+  Future<void> _showErrorDialog(String message) {
     return showDialog<void>(
       context: context,
-      barrierDismissible: false, // user must tap button!
+      barrierDismissible: false,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Flytter den seg?'),
+          title: const Text('Flytter den seg?'),
           content: SingleChildScrollView(
             child: ListBody(
               children: <Widget>[Text(message)],
@@ -109,10 +111,8 @@ class DescriptionScreenState extends State<DescriptionScreen> {
           ),
           actions: <Widget>[
             PlatformTextButton(
-              child: Text('Sukk, ok'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
+              child: const Text('Sukk, ok'),
+              onPressed: () => Navigator.of(context).pop(),
             ),
           ],
         );
@@ -121,60 +121,64 @@ class DescriptionScreenState extends State<DescriptionScreen> {
   }
 
   void _transmitInfo() async {
-    var file;
-    if (widget.imagePath.isNotEmpty) {
-      file = await MultipartFile.fromFile(widget.imagePath,
-          filename: "flyttdeg.jpg");
-    } else {
-      var imageData =
-          (await rootBundle.load('packages/flyttdeg/assets/images/picture.jpg'))
-              .buffer
-              .asUint8List();
-      file = MultipartFile.fromBytes(imageData, filename: "flyttdeg.png");
-    }
+    if (_isSending) return;
 
-    var formData = FormData.fromMap({
-      "position": widget.position!.latitude.toString() +
-          "," +
-          widget.position!.longitude.toString(),
-      "zoom": widget.zoom.toString(),
-      "description": textEditingController.value.text,
-      "file": file,
+    setState(() {
+      _isSending = true;
     });
 
-    BaseOptions options =
-        new BaseOptions(connectTimeout: Duration(seconds: 60), receiveTimeout: Duration(seconds: 60));
-
+    dynamic file;
     try {
-      await new Dio(options).post(
+      if (widget.imagePath.isNotEmpty) {
+        file = await MultipartFile.fromFile(widget.imagePath, filename: "flyttdeg.jpg");
+      } else {
+        var imageData = (await rootBundle.load('packages/flyttdeg/assets/images/picture.jpg'))
+            .buffer
+            .asUint8List();
+        file = MultipartFile.fromBytes(imageData, filename: "flyttdeg.png");
+      }
+
+      var formData = FormData.fromMap({
+        "position": "${widget.position!.latitude},${widget.position!.longitude}",
+        "zoom": widget.zoom.toString(),
+        "description": _textEditingController.text,
+        "file": file,
+      });
+
+      BaseOptions options = BaseOptions(
+        connectTimeout: const Duration(seconds: 30),
+        receiveTimeout: const Duration(seconds: 30),
+      );
+
+      await Dio(options).post(
         "https://flyttdeg.no/flyttdeg",
         data: formData,
       );
-    } on DioError {
-      await _showMyDialog(
-          'Noe gikk galt, flytting er tilsynelatende vanskelig i dag :-|');
 
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => TakePictureScreen(),
-        ),
-      );
-      return;
-    } finally {
-      var _deleteFile = File(widget.imagePath);
-      try {
-        if (await _deleteFile.exists()) {
-          await _deleteFile.delete();
+      if (!mounted) return;
+
+      // Clean up the file
+      if (widget.imagePath.isNotEmpty) {
+        var deleteFile = File(widget.imagePath);
+        if (await deleteFile.exists()) {
+          await deleteFile.delete();
         }
-      } catch (e) {}
-    }
+      }
 
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (context) => ThanksScreen(),
-      ),
-    );
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => const ThanksScreen()),
+        (route) => false,
+      );
+    } catch (e) {
+      print("Transmission error: $e");
+      await _showErrorDialog('Noe gikk galt, flytting er tilsynelatende vanskelig i dag :-|');
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isSending = false;
+        });
+      }
+    }
   }
 }
